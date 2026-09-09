@@ -32,6 +32,42 @@ function Dashboard() {
 
 
     /* =========================================
+       ADMIN ROLE
+    ========================================= */
+
+    const getUserRole = () => {
+
+        try {
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                return null;
+            }
+
+            const payload = JSON.parse(
+                atob(token.split(".")[1])
+            );
+
+            return payload.role;
+
+        } catch (error) {
+
+            console.error(
+                "Failed to read user role:",
+                error
+            );
+
+            return null;
+
+        }
+
+    };
+
+    const isAdmin = getUserRole() === "admin";
+
+
+    /* =========================================
        FETCH TOPICS
     ========================================= */
 
@@ -790,6 +826,274 @@ function Dashboard() {
                         </span>
 
                     </button>
+
+
+                    {/* =========================================
+                       ADMIN SECTION
+                       Visible only for admin users
+                    ========================================= */}
+
+                    {isAdmin && (
+
+                        <>
+
+                            <div className="sidebar-divider admin-divider"></div>
+
+                            <div className="sidebar-section-title admin-section-title">
+                                ADMIN
+                            </div>
+
+
+                            {/* ADD QUESTION */}
+
+                            <button
+                                className="sidebar-item admin-sidebar-item"
+                                onClick={() =>
+                                    navigate("/admin/questions/add")
+                                }
+                            >
+
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+
+                                    <path
+                                        d="M12 5V19"
+                                        stroke="currentColor"
+                                        strokeWidth="1.8"
+                                        strokeLinecap="round"
+                                    />
+
+                                    <path
+                                        d="M5 12H19"
+                                        stroke="currentColor"
+                                        strokeWidth="1.8"
+                                        strokeLinecap="round"
+                                    />
+
+                                </svg>
+
+                                <span>
+                                    Add Question
+                                </span>
+
+                            </button>
+
+
+                            {/* MANAGE QUESTIONS */}
+
+                            <button
+                                className="sidebar-item admin-sidebar-item"
+                                onClick={() =>
+                                    navigate("/admin/questions")
+                                }
+                            >
+
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+
+                                    <path
+                                        d="M4 6C4 4.9 4.9 4 6 4H18C19.1 4 20 4.9 20 6V18C20 19.1 19.1 20 18 20H6C4.9 20 4 19.1 4 18V6Z"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                    />
+
+                                    <path
+                                        d="M8 8H16"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                    />
+
+                                    <path
+                                        d="M8 12H16"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                    />
+
+                                    <path
+                                        d="M8 16H13"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                    />
+
+                                </svg>
+
+                                <span>
+                                    Manage Questions
+                                </span>
+
+                            </button>
+
+
+                            {/* TEST CASES */}
+
+                            <button
+                                className="sidebar-item admin-sidebar-item"
+                                onClick={() =>
+                                    navigate("/admin/test-cases")
+                                }
+                            >
+
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+
+                                    <path
+                                        d="M7 3V7"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                    />
+
+                                    <path
+                                        d="M17 3V7"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                    />
+
+                                    <path
+                                        d="M4 9H20"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                    />
+
+                                    <rect
+                                        x="4"
+                                        y="5"
+                                        width="16"
+                                        height="16"
+                                        rx="2"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                    />
+
+                                    <path
+                                        d="M8 13L10 15L14 11"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+
+                                </svg>
+
+                                <span>
+                                    Test Cases
+                                </span>
+
+                            </button>
+
+
+                            {/* CODE TEMPLATES */}
+
+                            <button
+                                className="sidebar-item admin-sidebar-item"
+                                onClick={() =>
+                                    navigate("/admin/code-templates")
+                                }
+                            >
+
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+
+                                    <path
+                                        d="M8 8L4 12L8 16"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+
+                                    <path
+                                        d="M16 8L20 12L16 16"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    />
+
+                                    <path
+                                        d="M14 5L10 19"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                    />
+
+                                </svg>
+
+                                <span>
+                                    Code Templates
+                                </span>
+
+                            </button>
+
+
+                            {/* SOLUTIONS */}
+
+                            <button
+                                className="sidebar-item admin-sidebar-item"
+                                onClick={() =>
+                                    navigate("/admin/solutions")
+                                }
+                            >
+
+                                <svg
+                                    width="19"
+                                    height="19"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+
+                                    <path
+                                        d="M9 18H15"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                    />
+
+                                    <path
+                                        d="M10 21H14"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinecap="round"
+                                    />
+
+                                    <path
+                                        d="M8.5 15.5C6.9 14.4 6 12.6 6 10.5C6 7.2 8.7 4.5 12 4.5C15.3 4.5 18 7.2 18 10.5C18 12.6 17.1 14.4 15.5 15.5C14.6 16.1 14 16.8 14 18H10C10 16.8 9.4 16.1 8.5 15.5Z"
+                                        stroke="currentColor"
+                                        strokeWidth="1.7"
+                                        strokeLinejoin="round"
+                                    />
+
+                                </svg>
+
+                                <span>
+                                    Solutions
+                                </span>
+
+                            </button>
+
+                        </>
+
+                    )}
 
                 </aside>
 

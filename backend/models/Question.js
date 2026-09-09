@@ -495,7 +495,7 @@ const getCodeTemplate = (questionId, language, callback) => {
             question_id,
             language,
             starter_code
-        FROM question_code_templates
+        FROM code_templates
         WHERE question_id = ?
         AND language = ?
     `;

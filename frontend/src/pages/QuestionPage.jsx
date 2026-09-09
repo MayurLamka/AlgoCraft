@@ -87,6 +87,10 @@ function QuestionPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState("");
 
+    const [solutions, setSolutions] = useState([]);
+    const [solutionsLoading, setSolutionsLoading] = useState(false);
+    const [solutionsError, setSolutionsError] = useState("");
+
     const [submissions, setSubmissions] = useState([]);
     const [submissionsLoading, setSubmissionsLoading] = useState(false);
     const [submissionsError, setSubmissionsError] = useState("");
@@ -408,6 +412,37 @@ function QuestionPage() {
 
             setSubmissionsLoading(false);
 
+        }
+    };
+    const fetchSolutions = async () => {
+        try {
+            setSolutionsLoading(true);
+            setSolutionsError("");
+
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(
+                `http://localhost:5000/api/solutions/question/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Failed to fetch solutions");
+            }
+
+            setSolutions(data.solutions || []);
+
+        } catch (error) {
+            console.error("Fetch solutions error:", error);
+            setSolutionsError(error.message || "Failed to load solutions");
+        } finally {
+            setSolutionsLoading(false);
         }
     };
     const handleRunCode = async () => {
@@ -996,8 +1031,8 @@ function QuestionPage() {
 
                         <button
                             className={`description-tab ${activeTab === "submissions"
-                                    ? "active"
-                                    : ""
+                                ? "active"
+                                : ""
                                 }`}
                             onClick={() => {
                                 setActiveTab("submissions");
@@ -1013,8 +1048,14 @@ function QuestionPage() {
 
 
                         <button
-                            className={`description-tab ${activeTab === "solutions" ? "active" : ""}`}
-                            onClick={() => setActiveTab("solutions")}
+                            className={`description-tab ${activeTab === "solutions"
+                                ? "active"
+                                : ""
+                                }`}
+                            onClick={() => {
+                                setActiveTab("solutions");
+                                fetchSolutions();
+                            }}
                         >
 
                             <span className="tab-icon">⚗</span>
@@ -1488,136 +1529,242 @@ function QuestionPage() {
 
                     {activeTab === "submissions" && (
 
-    <div className="submissions-content">
+                        <div className="submissions-content">
 
-        <div className="submissions-header">
+                            <div className="submissions-header">
 
-            <h2>
-                Submissions
-            </h2>
+                                <h2>
+                                    Submissions
+                                </h2>
 
-            <span>
-                {submissions.length} submission
-                {submissions.length !== 1 ? "s" : ""}
-            </span>
-
-        </div>
-
-
-        {submissionsLoading && (
-
-            <div className="submissions-message">
-                Loading submissions...
-            </div>
-
-        )}
-
-
-        {!submissionsLoading &&
-            submissionsError && (
-
-            <div className="submissions-message error">
-                {submissionsError}
-            </div>
-
-        )}
-
-
-        {!submissionsLoading &&
-            !submissionsError &&
-            submissions.length === 0 && (
-
-            <div className="submissions-empty">
-
-                <div className="submissions-empty-icon">
-                    📝
-                </div>
-
-                <h3>
-                    No submissions yet
-                </h3>
-
-                <p>
-                    Submit your solution to see
-                    your submission history here.
-                </p>
-
-            </div>
-
-        )}
-
-
-        {!submissionsLoading &&
-            !submissionsError &&
-            submissions.length > 0 && (
-
-            <div className="submissions-list">
-
-                {submissions.map((submission) => (
-
-                    <div
-                        className="submission-item"
-                        key={submission.submission_id}
-                    >
-
-                        <div className="submission-item-left">
-
-                            <div
-                                className={`submission-status ${
-                                    submission.status === "Accepted"
-                                        ? "accepted"
-                                        : "failed"
-                                }`}
-                            >
-
-                                {submission.status === "Accepted"
-                                    ? "✓ Accepted"
-                                    : "✕ " + submission.status}
+                                <span>
+                                    {submissions.length} submission
+                                    {submissions.length !== 1 ? "s" : ""}
+                                </span>
 
                             </div>
 
 
-                            <div className="submission-language">
+                            {submissionsLoading && (
 
-                                {submission.language === "cpp"
-                                    ? "C++"
-                                    : submission.language}
+                                <div className="submissions-message">
+                                    Loading submissions...
+                                </div>
 
-                            </div>
+                            )}
+
+
+                            {!submissionsLoading &&
+                                submissionsError && (
+
+                                    <div className="submissions-message error">
+                                        {submissionsError}
+                                    </div>
+
+                                )}
+
+
+                            {!submissionsLoading &&
+                                !submissionsError &&
+                                submissions.length === 0 && (
+
+                                    <div className="submissions-empty">
+
+                                        <div className="submissions-empty-icon">
+                                            📝
+                                        </div>
+
+                                        <h3>
+                                            No submissions yet
+                                        </h3>
+
+                                        <p>
+                                            Submit your solution to see
+                                            your submission history here.
+                                        </p>
+
+                                    </div>
+
+                                )}
+
+
+                            {!submissionsLoading &&
+                                !submissionsError &&
+                                submissions.length > 0 && (
+
+                                    <div className="submissions-list">
+
+                                        {submissions.map((submission) => (
+
+                                            <div
+                                                className="submission-item"
+                                                key={submission.submission_id}
+                                            >
+
+                                                <div className="submission-item-left">
+
+                                                    <div
+                                                        className={`submission-status ${submission.status === "Accepted"
+                                                            ? "accepted"
+                                                            : "failed"
+                                                            }`}
+                                                    >
+
+                                                        {submission.status === "Accepted"
+                                                            ? "✓ Accepted"
+                                                            : "✕ " + submission.status}
+
+                                                    </div>
+
+
+                                                    <div className="submission-language">
+
+                                                        {submission.language === "cpp"
+                                                            ? "C++"
+                                                            : submission.language}
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div className="submission-item-middle">
+
+                                                    <span>
+                                                        {submission.passed_tests}
+                                                        /
+                                                        {submission.total_tests}
+                                                        {" test cases"}
+                                                    </span>
+
+                                                </div>
+
+
+                                                <div className="submission-item-right">
+
+                                                    {new Date(
+                                                        submission.submitted_at
+                                                    ).toLocaleString()}
+
+                                                </div>
+
+                                            </div>
+
+                                        ))}
+
+                                    </div>
+
+                                )}
 
                         </div>
 
+                    )}
+                   {activeTab === "solutions" && (
+    <div className="solutions-content">
 
-                        <div className="submission-item-middle">
+        {solutionsLoading && (
+            <div className="solutions-loading">
+                Loading solutions...
+            </div>
+        )}
 
-                            <span>
-                                {submission.passed_tests}
-                                /
-                                {submission.total_tests}
-                                {" test cases"}
-                            </span>
+        {solutionsError && (
+            <div className="solutions-error">
+                {solutionsError}
+            </div>
+        )}
 
+        {!solutionsLoading && !solutionsError && solutions.length === 0 && (
+            <div className="no-solutions">
+                No solutions available for this question.
+            </div>
+        )}
+
+        {!solutionsLoading && !solutionsError && solutions.length > 0 && (
+            <div className="solution-wrapper">
+
+                {/* Approach */}
+                <section className="solution-section">
+                    <h3>💡 Approach</h3>
+
+                    <p>
+                        {solutions[0].approach}
+                    </p>
+                </section>
+
+
+                {/* Explanation */}
+                <section className="solution-section">
+                    <h3>📖 Explanation</h3>
+
+                    <p>
+                        {solutions[0].explanation}
+                    </p>
+                </section>
+
+
+                {/* Complexity */}
+                <section className="solution-section">
+                    <h3>⏱️ Complexity</h3>
+
+                    <div className="complexity-box">
+
+                        <div>
+                            <strong>Time:</strong>{" "}
+                            {solutions[0].time_complexity}
                         </div>
 
-
-                        <div className="submission-item-right">
-
-                            {new Date(
-                                submission.submitted_at
-                            ).toLocaleString()}
-
+                        <div>
+                            <strong>Space:</strong>{" "}
+                            {solutions[0].space_complexity}
                         </div>
 
                     </div>
+                </section>
 
-                ))}
+
+                {/* Language Solutions */}
+                <section className="solution-section">
+
+                    <h3>💻 Solutions</h3>
+
+                    {solutions.map((solution) => {
+
+                        const languageNames = {
+                            cpp: "C++",
+                            java: "Java",
+                            python: "Python",
+                            javascript: "JavaScript"
+                        };
+
+                        return (
+                            <div
+                                className="language-solution"
+                                key={solution.solution_id}
+                            >
+
+                                <div className="language-title">
+                                    {languageNames[solution.language] ||
+                                        solution.language}
+                                </div>
+
+                                <pre>
+                                    <code>
+                                        {solution.code}
+                                    </code>
+                                </pre>
+
+                            </div>
+                        );
+
+                    })}
+
+                </section>
 
             </div>
-
         )}
 
     </div>
-
 )}
 
                 </section>

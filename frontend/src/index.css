@@ -2054,6 +2054,7 @@ body {
 
     flex: 1;
 
+    height: calc(100vh - 64px);
     min-height: 0;
 
     display: grid;
@@ -2076,19 +2077,24 @@ body {
 .problem-editor {
 
     min-width: 0;
-
     min-height: 0;
 
     background-color: #111111;
 
     border-radius: 8px;
 
-   display: flex;
+    display: flex;
     flex-direction: column;
 
     overflow: hidden;
 }
 
+.question-content,
+.submissions-content,
+.solutions-content,
+.submission-result-content {
+    min-height: 0;
+}
 
 /* =========================================
    RESIZE DIVIDER
@@ -2238,6 +2244,9 @@ body {
     scrollbar-width: none;
 
     overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 
@@ -2722,6 +2731,7 @@ body {
     cursor: pointer;
     outline: none;
 }
+
 .editor-language-select option:hover {
     background: #333333;
     color: #ffffff;
@@ -2746,7 +2756,7 @@ body {
     flex: 1;
 
     min-height: 0;
-      min-width: 0;
+    min-width: 0;
     overflow: hidden;
 }
 
@@ -2757,6 +2767,7 @@ body {
     align-items: center;
     justify-content: center;
 }
+
 /* =========================================
    OUTPUT PANEL
 ========================================= */
@@ -2956,8 +2967,7 @@ body {
 
 /* Passed → green */
 
-.example-result.passed
-.example-result-header {
+.example-result.passed .example-result-header {
     border-left-color: #22c55e;
     color: #22c55e;
 }
@@ -2965,8 +2975,7 @@ body {
 
 /* Failed → red */
 
-.example-result.failed
-.example-result-header {
+.example-result.failed .example-result-header {
     border-left-color: #ef4444;
     color: #ef4444;
 }
@@ -3239,7 +3248,7 @@ body {
     border-top: 1px solid #202020;
 }
 
-.submission-test-block > span {
+.submission-test-block>span {
     display: block;
     margin-bottom: 7px;
     color: #777777;
@@ -3259,12 +3268,22 @@ body {
     white-space: pre-wrap;
     overflow-x: auto;
 }
+
 /* =====================================================
    SUBMISSIONS
 ===================================================== */
 
 .submissions-content {
-    padding: 20px 0;
+    flex: 1;
+    min-height: 0;
+
+    padding: 20px 28px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #444444 transparent;
 }
 
 .submissions-header {
@@ -3362,8 +3381,278 @@ body {
 .submissions-empty p {
     opacity: 0.6;
 }
+
 .submission-error-text {
     color: #ef4444 !important;
+}
+
+/* =====================================================
+   SOLUTIONS
+===================================================== */
+
+.solutions-content {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+
+    padding: 24px 28px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #444444 transparent;
+}
+
+/* Chrome / Edge / Safari */
+
+.solutions-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.solutions-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.solutions-content::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 10px;
+}
+
+.solutions-content::-webkit-scrollbar-thumb:hover {
+    background: #666666;
+}
+
+/* =========================================
+   SOLUTION WRAPPER
+========================================= */
+
+.solution-wrapper {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* =========================================
+   SOLUTION SECTION
+========================================= */
+
+.solution-section {
+    margin-bottom: 30px;
+}
+
+.solution-section:last-child {
+    margin-bottom: 10px;
+}
+
+.solution-section h3 {
+    margin: 0 0 13px;
+
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.solution-section p {
+    margin: 0;
+
+    color: #d4d4d4;
+
+    font-size: 14px;
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+}
+
+/* =========================================
+   COMPLEXITY
+========================================= */
+
+.complexity-box {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+.complexity-box > div {
+    padding: 15px 18px;
+
+    border: 1px solid #252525;
+    border-radius: 8px;
+
+    background-color: #0d0d0d;
+
+    color: #c5c5c5;
+
+    font-size: 14px;
+}
+
+.complexity-box strong {
+    color: #777777;
+
+    font-weight: 600;
+}
+
+/* =========================================
+   LANGUAGE SOLUTIONS
+========================================= */
+
+.language-solution {
+    width: 100%;
+
+    margin-top: 18px;
+
+    border: 1px solid #292929;
+    border-radius: 8px;
+
+    background-color: #0d0d0d;
+
+    overflow: hidden;
+}
+
+.language-title {
+    min-height: 42px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 16px;
+
+    border-bottom: 1px solid #292929;
+
+    background-color: #181818;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.language-solution pre {
+    width: 100%;
+
+    margin: 0;
+    padding: 18px;
+
+    background-color: #080808;
+
+    overflow-x: auto;
+
+    color: #d4d4d4;
+
+    font-family: "Consolas", "Courier New", monospace;
+
+    font-size: 13px;
+    line-height: 1.6;
+
+    white-space: pre;
+}
+
+.language-solution code {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    white-space: pre;
+}
+
+/* Code scrollbar */
+
+.language-solution pre::-webkit-scrollbar {
+    height: 6px;
+}
+
+.language-solution pre::-webkit-scrollbar-track {
+    background: #080808;
+}
+
+.language-solution pre::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 10px;
+}
+
+/* =========================================
+   SOLUTION LOADING / ERROR / EMPTY
+========================================= */
+
+.solutions-loading,
+.solutions-error,
+.no-solutions {
+    width: 100%;
+
+    padding: 40px 20px;
+
+    text-align: center;
+
+    color: #777777;
+
+    font-size: 14px;
+}
+
+.solutions-error {
+    color: #ef4444;
+}
+
+/* =========================================
+   OLD / OPTIONAL SOLUTION CLASSES
+   Kept for compatibility
+========================================= */
+
+.solution-explanation {
+    white-space: pre-line;
+}
+
+.solution-complexity {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.solution-complexity-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.solution-complexity-card span {
+    display: block;
+    font-size: 14px;
+    opacity: 0.6;
+    margin-bottom: 8px;
+}
+
+.solution-complexity-card strong {
+    font-size: 20px;
+}
+
+.solution-code {
+    margin: 0;
+    padding: 20px;
+    border-radius: 10px;
+    overflow-x: auto;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.solution-code code {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre;
+}
+
+.solutions-message {
+    padding: 40px;
+    text-align: center;
+    opacity: 0.7;
+}
+
+.solutions-message.error {
+    color: #ef4444;
 }
 
 .submitted-code {
@@ -3412,6 +3701,7 @@ body {
 }
 
 @media (max-width: 700px) {
+
     .submission-stats,
     .complexity-grid {
         grid-template-columns: 1fr;
@@ -3420,4 +3710,531 @@ body {
     .submission-result-content {
         padding: 18px;
     }
+}
+
+
+/* =====================================================
+   ADMIN QUESTION PAGE
+===================================================== */
+
+.admin-page {
+    min-height: 100vh;
+    padding: 30px 40px 50px;
+
+    background-color: #050505;
+    color: #ffffff;
+
+    overflow-y: auto;
+}
+
+.admin-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 25px;
+}
+
+.admin-page-header h1 {
+    margin: 0;
+
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.admin-page-header p {
+    margin: 6px 0 0;
+
+    color: #777777;
+    font-size: 14px;
+}
+
+.admin-back-button {
+    padding: 9px 15px;
+
+    border: 1px solid #292929;
+    border-radius: 7px;
+
+    background-color: #111111;
+    color: #ffffff;
+
+    cursor: pointer;
+}
+
+.admin-back-button:hover {
+    background-color: #1c1c1c;
+}
+
+
+/* =========================================
+   ALERTS
+========================================= */
+
+.admin-alert {
+    margin-bottom: 20px;
+    padding: 14px 18px;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+}
+
+.admin-alert-error {
+    border: 1px solid #5c2525;
+    background-color: #241111;
+    color: #ef4444;
+}
+
+.admin-alert-success {
+    border: 1px solid #145c3c;
+    background-color: #10251c;
+    color: #16c784;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.admin-question-form {
+    width: 100%;
+    max-width: 1100px;
+
+    margin: 0 auto;
+}
+
+.admin-card {
+    margin-bottom: 20px;
+
+    padding: 25px;
+
+    border: 1px solid #222222;
+    border-radius: 10px;
+
+    background-color: #0d0d0d;
+}
+
+.admin-card-title {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 25px;
+
+    color: #ffffff;
+
+    font-size: 19px;
+    font-weight: 600;
+}
+
+.admin-card-title span {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+
+    background-color: #000000;
+    color: #ffffff;
+
+    font-size: 12px;
+}
+
+
+/* =========================================
+   FORM GROUP
+========================================= */
+
+.admin-form-group {
+    margin-bottom: 20px;
+}
+
+.admin-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.admin-form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #d4d4d4;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.admin-form-group small {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #666666;
+
+    font-size: 11px;
+}
+
+.admin-form-group input,
+.admin-form-group select,
+.admin-form-group textarea {
+    width: 100%;
+
+    border: 1px solid #292929;
+    border-radius: 7px;
+
+    outline: none;
+
+    background-color: #111111;
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.admin-form-group input,
+.admin-form-group select {
+    height: 44px;
+    padding: 0 13px;
+}
+
+.admin-form-group textarea {
+    min-height: 100px;
+
+    padding: 13px;
+
+    resize: vertical;
+
+    line-height: 1.6;
+}
+
+.admin-form-group input:focus,
+.admin-form-group select:focus,
+.admin-form-group textarea:focus {
+    border-color: #555555;
+}
+
+.admin-form-group input::placeholder,
+.admin-form-group textarea::placeholder {
+    color: #555555;
+}
+
+
+/* =========================================
+   TWO COLUMN FORM
+========================================= */
+
+.admin-form-row {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 15px;
+}
+
+
+/* =========================================
+   TOPICS
+========================================= */
+
+.admin-topic-list {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.admin-topic {
+    padding: 8px 13px;
+
+    border: 1px solid #292929;
+    border-radius: 20px;
+
+    background-color: #111111;
+    color: #a5a5a5;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.admin-topic:hover {
+    border-color: #444444;
+    color: #ffffff;
+}
+
+.admin-topic.selected {
+    border-color: #fefefe;
+
+    background-color: #050505;
+
+    color: #ffffff;
+}
+
+
+/* =========================================
+   DYNAMIC ROW
+========================================= */
+
+.admin-dynamic-row {
+    display: grid;
+
+    grid-template-columns: 30px 1fr 35px;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 10px;
+}
+
+.admin-number {
+    color: #666666;
+
+    font-size: 13px;
+
+    text-align: center;
+}
+
+.admin-dynamic-row input,
+.admin-dynamic-row textarea {
+    width: 100%;
+
+    padding: 11px 13px;
+
+    border: 1px solid #292929;
+    border-radius: 7px;
+
+    outline: none;
+
+    background-color: #111111;
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.admin-dynamic-row textarea {
+    resize: vertical;
+}
+
+.admin-dynamic-row input:focus,
+.admin-dynamic-row textarea:focus {
+    border-color: #555555;
+}
+
+
+/* =========================================
+   ADD / REMOVE
+========================================= */
+
+.admin-add-button {
+    padding: 9px 14px;
+
+    border: 1px dashed #3b3b3b;
+    border-radius: 7px;
+
+    background: transparent;
+    color: #aaaaaa;
+
+    cursor: pointer;
+}
+
+.admin-add-button:hover {
+    border-color: #ffd400;
+    color: #ffd400;
+}
+
+.admin-remove-button {
+    width: 32px;
+    height: 32px;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+    color: #777777;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+.admin-remove-button:hover {
+    background-color: #241111;
+    color: #ef4444;
+}
+
+
+/* =========================================
+   EXAMPLE / TEST CASE CARD
+========================================= */
+
+.admin-example-card {
+    margin-bottom: 15px;
+
+    padding: 18px;
+
+    border: 1px solid #252525;
+    border-radius: 8px;
+
+    background-color: #111111;
+}
+
+.admin-section-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.admin-section-row h3 {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 15px;
+}
+
+.admin-remove-text {
+    border: none;
+
+    background: transparent;
+    color: #777777;
+
+    cursor: pointer;
+}
+
+.admin-remove-text:hover {
+    color: #ef4444;
+}
+
+
+/* =========================================
+   CHECKBOX
+========================================= */
+
+.admin-checkbox {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color: #aaaaaa;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+.admin-checkbox input {
+    width: 16px;
+    height: 16px;
+
+    accent-color: #ffd400;
+}
+
+
+/* =========================================
+   CODE
+========================================= */
+
+.admin-code-textarea {
+    min-height: 260px !important;
+
+    font-family: Consolas, Monaco, monospace !important;
+
+    font-size: 13px !important;
+
+    line-height: 1.6 !important;
+
+    tab-size: 4;
+}
+
+
+/* =========================================
+   SAVE AREA
+========================================= */
+
+.admin-submit-area {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    padding: 5px 0 30px;
+}
+
+.admin-cancel-button,
+.admin-save-button {
+    height: 44px;
+
+    padding: 0 22px;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.admin-cancel-button {
+    border: 1px solid #292929;
+
+    background-color: #111111;
+    color: #aaaaaa;
+}
+
+.admin-cancel-button:hover {
+    color: #ffffff;
+    background-color: #1a1a1a;
+}
+
+.admin-save-button {
+    border: 1px solid #ffd400;
+
+    background-color: #ffd400;
+    color: #111111;
+}
+
+.admin-save-button:hover {
+    background-color: #e6c000;
+}
+
+.admin-save-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .admin-page {
+        padding: 20px;
+    }
+
+    .admin-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-card {
+        padding: 18px;
+    }
+
+    .admin-page-header {
+        align-items: flex-start;
+    }
+
 }

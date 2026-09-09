@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import QuestionPage from "./pages/QuestionPage";
+import AddQuestion from "./pages/AddQuestion";
 
 function App() {
   return (
@@ -23,6 +24,11 @@ function App() {
         <Route
           path="/question/:id"
           element={<QuestionPage />}
+        />
+
+        <Route
+          path="/admin/questions/add"
+          element={<AddQuestion />}
         />
 
       </Routes>
