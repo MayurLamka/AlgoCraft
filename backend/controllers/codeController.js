@@ -1,9 +1,7 @@
 const db = require("../config/db");
 const SolvedQuestion = require("../models/SolvedQuestion");
 const Submission = require("../models/Submission");
-const {
-    runCpp
-} = require("../services/codeRunner");
+const { runCodeByLanguage } = require("../services/codeRunner");
 
 const {
     judgeCode
@@ -41,24 +39,6 @@ const runCode = async (req, res) => {
 
                 message:
                     "questionId, language and code are required"
-            });
-        }
-
-
-        // =============================================
-        // CURRENTLY SUPPORT C++
-        // =============================================
-
-        if (
-            language.toLowerCase() !== "cpp"
-        ) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                message:
-                    "Only C++ is currently supported"
             });
         }
 
@@ -167,7 +147,8 @@ const runCode = async (req, res) => {
             // =========================================
 
             const execution =
-                await runCpp(
+                await runCodeByLanguage(
+                    language,
                     code,
                     example.execution_input || ""
                 );
@@ -397,40 +378,40 @@ const submitCode = async (req, res) => {
                 questionId
             );
 
-// =============================================
-// 3. SAVE SUBMISSION HISTORY
-// =============================================
+        // =============================================
+        // 3. SAVE SUBMISSION HISTORY
+        // =============================================
 
-await new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
 
-    Submission.createSubmission(
-        userId,
-        questionId,
-        language,
-        code,
-        result.status,
-        null,
-        null,
-        result.totalTests || 0,
-        result.passedTests || 0,
-        (error) => {
+            Submission.createSubmission(
+                userId,
+                questionId,
+                language,
+                code,
+                result.status,
+                null,
+                null,
+                result.totalTests || 0,
+                result.passedTests || 0,
+                (error) => {
 
-            if (error) {
+                    if (error) {
 
-                console.error(
-                    "SAVE SUBMISSION ERROR:",
-                    error
-                );
+                        console.error(
+                            "SAVE SUBMISSION ERROR:",
+                            error
+                        );
 
-                reject(error);
-                return;
-            }
+                        reject(error);
+                        return;
+                    }
 
-            resolve();
-        }
-    );
+                    resolve();
+                }
+            );
 
-});
+        });
 
 
 

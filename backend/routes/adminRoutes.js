@@ -12,11 +12,17 @@ const adminMiddleware =
 const {
     createQuestion,
     getAllQuestionsforAdmin,
+    getAdminQuestionById,
     updateQuestion,
     deleteQuestion
 } = require("../controllers/AdminQuestionController");
 
-
+router.get(
+    "/questions/:id",
+    authMiddleware,
+    adminMiddleware,
+    getAdminQuestionById
+);
 
 // Admin test route
 router.get(

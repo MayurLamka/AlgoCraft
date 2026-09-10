@@ -506,6 +506,244 @@ const getCodeTemplate = (questionId, language, callback) => {
         callback
     );
 };
+// =====================================================
+// GET COMPLETE QUESTION FOR ADMIN EDIT
+// =====================================================
+
+const getAdminQuestionById = (questionId, callback) => {
+
+    const questionSql = `
+        SELECT
+            question_id,
+            title,
+            difficulty,
+            description,
+            youtube_link,
+            created_at
+        FROM questions
+        WHERE question_id = ?
+    `;
+
+    db.query(
+        questionSql,
+        [questionId],
+        (error, questionResults) => {
+
+            if (error) {
+                return callback(error);
+            }
+
+            if (questionResults.length === 0) {
+                return callback(null, null);
+            }
+
+            const question = questionResults[0];
+
+            // ==============================
+            // TOPICS
+            // ==============================
+
+            const topicsSql = `
+                SELECT
+                    t.topic_id,
+                    t.name
+                FROM question_topics qt
+                JOIN topics t
+                    ON qt.topic_id = t.topic_id
+                WHERE qt.question_id = ?
+                ORDER BY t.name ASC
+            `;
+
+            // ==============================
+            // CONSTRAINTS
+            // ==============================
+
+            const constraintsSql = `
+                SELECT
+                    constraint_id,
+                    constraint_number,
+                    constraint_text
+                FROM question_constraints
+                WHERE question_id = ?
+                ORDER BY constraint_number ASC
+            `;
+
+            // ==============================
+            // EXAMPLES
+            // ==============================
+
+            const examplesSql = `
+                SELECT
+                    example_id,
+                    example_number,
+                    input,
+                    execution_input,
+                    output,
+                    explanation
+                FROM question_examples
+                WHERE question_id = ?
+                ORDER BY example_number ASC
+            `;
+
+            // ==============================
+            // HINTS
+            // ==============================
+
+            const hintsSql = `
+                SELECT
+                    hint_id,
+                    hint_number,
+                    hint_text
+                FROM question_hints
+                WHERE question_id = ?
+                ORDER BY hint_number ASC
+            `;
+
+            // ==============================
+            // TEST CASES
+            // ==============================
+
+            const testCasesSql = `
+                SELECT
+                    test_case_id,
+                    input_data,
+                    expected_output,
+                    is_hidden
+                FROM test_cases
+                WHERE question_id = ?
+                ORDER BY test_case_id ASC
+            `;
+
+            // ==============================
+            // CODE TEMPLATES
+            // ==============================
+
+            const templatesSql = `
+                SELECT
+                    template_id,
+                    language,
+                    starter_code
+                FROM code_templates
+                WHERE question_id = ?
+                ORDER BY template_id ASC
+            `;
+
+            // ==============================
+            // SOLUTIONS
+            // ==============================
+
+            const solutionsSql = `
+                SELECT
+                    solution_id,
+                    language,
+                    approach,
+                    explanation,
+                    time_complexity,
+                    space_complexity,
+                    code
+                FROM solutions
+                WHERE question_id = ?
+                ORDER BY solution_id ASC
+            `;
+
+            // Run all queries
+
+            db.query(topicsSql, [questionId], (error, topics) => {
+
+                if (error) {
+                    return callback(error);
+                }
+
+                db.query(
+                    constraintsSql,
+                    [questionId],
+                    (error, constraints) => {
+
+                        if (error) {
+                            return callback(error);
+                        }
+
+                        db.query(
+                            examplesSql,
+                            [questionId],
+                            (error, examples) => {
+
+                                if (error) {
+                                    return callback(error);
+                                }
+
+                                db.query(
+                                    hintsSql,
+                                    [questionId],
+                                    (error, hints) => {
+
+                                        if (error) {
+                                            return callback(error);
+                                        }
+
+                                        db.query(
+                                            testCasesSql,
+                                            [questionId],
+                                            (error, testCases) => {
+
+                                                if (error) {
+                                                    return callback(error);
+                                                }
+
+                                                db.query(
+                                                    templatesSql,
+                                                    [questionId],
+                                                    (error, templates) => {
+
+                                                        if (error) {
+                                                            return callback(error);
+                                                        }
+
+                                                        db.query(
+                                                            solutionsSql,
+                                                            [questionId],
+                                                            (error, solutions) => {
+
+                                                                if (error) {
+                                                                    return callback(error);
+                                                                }
+
+                                                                question.topics = topics;
+                                                                question.constraints = constraints;
+                                                                question.examples = examples;
+                                                                question.hints = hints;
+                                                                question.testCases = testCases;
+                                                                question.templates = templates;
+                                                                question.solutions = solutions;
+
+                                                                callback(
+                                                                    null,
+                                                                    question
+                                                                );
+
+                                                            }
+                                                        );
+
+                                                    }
+                                                );
+
+                                            }
+                                        );
+
+                                    }
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+            });
+
+        }
+    );
+};
 module.exports = {
     getAllQuestions,
     getQuestionById,
@@ -514,6 +752,7 @@ module.exports = {
     getQuestionsByTopic,
     createQuestion,
     getAllQuestionsAdmin,
+    getAdminQuestionById,
     updateQuestion,
     deleteQuestion,
     getCodeTemplate
