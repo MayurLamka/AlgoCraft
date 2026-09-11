@@ -8,6 +8,9 @@ import QuestionPage from "./pages/QuestionPage";
 import AddQuestion from "./pages/AddQuestion";
 import ManageQuestions from "./pages/ManageQuestions";
 import EditQuestion from "./pages/EditQuestion";
+import Interviews from "./pages/Interviews";
+import Notes from "./pages/Notes";
+import Progress from "./pages/Progress";
 
 function App() {
   return (
@@ -41,6 +44,21 @@ function App() {
         <Route
           path="/admin/questions/:id/edit"
           element={<EditQuestion />}
+        />
+
+        <Route
+          path="/interviews"
+          element={<Interviews />}
+        />
+
+        <Route
+          path="/notes"
+          element={<Notes />}
+        />
+
+        <Route
+          path="/progress"
+          element={<Progress />}
         />
 
       </Routes>

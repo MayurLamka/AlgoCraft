@@ -20,6 +20,8 @@ const adminRoutes = require("./routes/adminRoutes");
 const topicRoutes = require("./routes/topicRoutes");
 const codeRoutes = require("./routes/codeRoutes");
 const solutionRoutes = require("./routes/solutionRoutes");
+const interviewRoutes = require("./routes/interviewRoutes");
+const noteRoutes = require("./routes/noteRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/questions", questionRoutes);
@@ -30,10 +32,9 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/admin",adminRoutes);
 app.use("/api/topics", topicRoutes);
 app.use("/api/code", codeRoutes);
-app.use(
-    "/api/solutions",
-    solutionRoutes
-);
+app.use("/api/solutions", solutionRoutes);
+app.use("/api/interviews",interviewRoutes);
+app.use("/api/notes",noteRoutes);
 
 app.get("/", (req, res) => {
     res.send("DSA Platform API Running");

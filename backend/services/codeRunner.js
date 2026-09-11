@@ -1129,10 +1129,8 @@ const judgePython = async (
         // CHECK SYNTAX FIRST
         // ---------------------------------------------
 
-        let command = `
-            python -m py_compile /workspace/main.py
-            || exit 10;
-        `;
+       let command =
+    `python -c "compile(open('/workspace/main.py').read(), '/workspace/main.py', 'exec')" || exit 10;`;
 
 
         // ---------------------------------------------
@@ -1342,10 +1340,8 @@ const judgeJavaScript = async (
         // CHECK + RUN
         // ---------------------------------------------
 
-        let command = `
-            node --check /workspace/main.js
-            || exit 10;
-        `;
+        let command =
+    `node --check /workspace/main.js || exit 10;`;
 
 
         for (

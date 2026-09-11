@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import algoCraftLogo from "../assets/algocraft-logo.svg";
 
@@ -62,6 +62,24 @@ function QuestionPage() {
     };
 
     const { id } = useParams();
+
+    const navigate = useNavigate();
+
+/* =========================================
+   PROBLEM LIST / QUESTION NAVIGATION
+========================================= */
+
+const [problemListOpen, setProblemListOpen] = useState(false);
+
+const [problemListQuestions, setProblemListQuestions] = useState([]);
+
+const [problemListSearch, setProblemListSearch] = useState("");
+
+const [problemListDifficulty, setProblemListDifficulty] = useState("all");
+
+const [problemListLoading, setProblemListLoading] = useState(false);
+
+const [problemListError, setProblemListError] = useState("");
 
     const [question, setQuestion] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -171,6 +189,279 @@ function QuestionPage() {
         fetchQuestion();
 
     }, [id]);
+
+    /* =========================================
+   FETCH ALL QUESTIONS FOR PROBLEM LIST
+========================================= */
+
+const fetchProblemListQuestions = async () => {
+
+    try {
+
+        setProblemListLoading(true);
+        setProblemListError("");
+
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+            "http://localhost:5000/api/questions",
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message || "Failed to load questions"
+            );
+
+        }
+
+        setProblemListQuestions(
+            data.questions || []
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Problem list error:",
+            error
+        );
+
+        setProblemListError(
+            error.message || "Failed to load questions"
+        );
+
+    } finally {
+
+        setProblemListLoading(false);
+
+    }
+
+};
+
+
+/* =========================================
+   FETCH PROBLEM LIST ON PAGE LOAD
+========================================= */
+
+useEffect(() => {
+
+    fetchProblemListQuestions();
+
+}, []);
+
+/* =========================================
+   OPEN PROBLEM LIST
+========================================= */
+
+const handleProblemListOpen = () => {
+
+    setProblemListOpen(true);
+
+};
+
+
+/* =========================================
+   CLOSE PROBLEM LIST
+========================================= */
+
+const handleProblemListClose = () => {
+
+    setProblemListOpen(false);
+
+    setProblemListSearch("");
+
+    setProblemListDifficulty("all");
+
+};
+
+
+/* =========================================
+   GO TO QUESTION
+========================================= */
+
+const goToQuestion = (questionId) => {
+
+    setProblemListOpen(false);
+
+    setProblemListSearch("");
+
+    setProblemListDifficulty("all");
+
+    navigate(`/question/${questionId}`);
+
+};
+
+
+/* =========================================
+   PREVIOUS QUESTION
+========================================= */
+
+const handlePreviousQuestion = () => {
+
+    if (!problemListQuestions.length) {
+        return;
+    }
+
+    const currentIndex =
+        problemListQuestions.findIndex(
+            (question) =>
+                Number(question.question_id) === Number(id)
+        );
+
+    if (currentIndex === -1) {
+        return;
+    }
+
+    if (currentIndex > 0) {
+
+        const previousQuestion =
+            problemListQuestions[currentIndex - 1];
+
+        navigate(
+            `/question/${previousQuestion.question_id}`
+        );
+
+    }
+
+};
+
+
+/* =========================================
+   NEXT QUESTION
+========================================= */
+
+const handleNextQuestion = () => {
+
+    if (!problemListQuestions.length) {
+        return;
+    }
+
+    const currentIndex =
+        problemListQuestions.findIndex(
+            (question) =>
+                Number(question.question_id) === Number(id)
+        );
+
+    if (currentIndex === -1) {
+        return;
+    }
+
+    if (
+        currentIndex <
+        problemListQuestions.length - 1
+    ) {
+
+        const nextQuestion =
+            problemListQuestions[currentIndex + 1];
+
+        navigate(
+            `/question/${nextQuestion.question_id}`
+        );
+
+    }
+
+};
+
+
+/* =========================================
+   RANDOM QUESTION
+========================================= */
+
+const handleRandomQuestion = () => {
+
+    if (!problemListQuestions.length) {
+        return;
+    }
+
+    if (problemListQuestions.length === 1) {
+
+        navigate(
+            `/question/${problemListQuestions[0].question_id}`
+        );
+
+        return;
+
+    }
+
+    const otherQuestions =
+        problemListQuestions.filter(
+            (question) =>
+                Number(question.question_id) !== Number(id)
+        );
+
+    const randomIndex =
+        Math.floor(
+            Math.random() * otherQuestions.length
+        );
+
+    const randomQuestion =
+        otherQuestions[randomIndex];
+
+    navigate(
+        `/question/${randomQuestion.question_id}`
+    );
+
+};
+
+/* =========================================
+   FILTER PROBLEM LIST
+========================================= */
+
+const filteredProblemList =
+    problemListQuestions.filter(
+        (question) => {
+
+            const matchesSearch =
+                question.title
+                    .toLowerCase()
+                    .includes(
+                        problemListSearch
+                            .toLowerCase()
+                            .trim()
+                    );
+
+            const matchesDifficulty =
+                problemListDifficulty === "all" ||
+                question.difficulty ===
+                    problemListDifficulty;
+
+            return (
+                matchesSearch &&
+                matchesDifficulty
+            );
+
+        }
+    );
+
+
+/* =========================================
+   SOLVED COUNT
+========================================= */
+
+const solvedQuestionCount =
+    problemListQuestions.filter(
+        (question) =>
+            Number(question.isSolved) === 1
+    ).length;
+
+
+/* =========================================
+   CURRENT QUESTION INDEX
+========================================= */
+
+const currentQuestionIndex =
+    problemListQuestions.findIndex(
+        (question) =>
+            Number(question.question_id) === Number(id)
+    );
+    
 
     useEffect(() => {
 
@@ -655,10 +946,11 @@ function QuestionPage() {
 
                     {/* PROBLEM LIST */}
 
-                    <button
-                        className="problem-nav-button problem-list-button"
-                        title="Problem List"
-                    >
+                   <button
+    className="problem-nav-button problem-list-button"
+    title="Problem List"
+    onClick={handleProblemListOpen}
+>
 
                         <svg
                             width="19"
@@ -720,10 +1012,15 @@ function QuestionPage() {
 
                     {/* PREVIOUS QUESTION */}
 
-                    <button
-                        className="problem-nav-icon"
-                        title="Previous Question"
-                    >
+                   <button
+    className="problem-nav-icon"
+    title="Previous Question"
+    onClick={handlePreviousQuestion}
+    disabled={
+        currentQuestionIndex <= 0 ||
+        problemListLoading
+    }
+>
 
                         <svg
                             width="22"
@@ -747,10 +1044,17 @@ function QuestionPage() {
 
                     {/* NEXT QUESTION */}
 
-                    <button
-                        className="problem-nav-icon"
-                        title="Next Question"
-                    >
+                   <button
+    className="problem-nav-icon"
+    title="Next Question"
+    onClick={handleNextQuestion}
+    disabled={
+        currentQuestionIndex === -1 ||
+        currentQuestionIndex >=
+            problemListQuestions.length - 1 ||
+        problemListLoading
+    }
+>
 
                         <svg
                             width="22"
@@ -774,10 +1078,15 @@ function QuestionPage() {
 
                     {/* RANDOM QUESTION */}
 
-                    <button
-                        className="problem-nav-icon"
-                        title="Random Question"
-                    >
+                   <button
+    className="problem-nav-icon"
+    title="Random Question"
+    onClick={handleRandomQuestion}
+    disabled={
+        problemListQuestions.length < 2 ||
+        problemListLoading
+    }
+>
 
                         <svg
                             width="21"
@@ -1007,6 +1316,250 @@ function QuestionPage() {
                 {/* LEFT PROBLEM PANEL */}
 
                 <section className="problem-description">
+
+                {/* =========================================
+   PROBLEM LIST PANEL
+========================================= */}
+
+{problemListOpen && (
+
+    <div className="problem-list-panel">
+
+        {/* =========================================
+           HEADER
+        ========================================= */}
+
+        <div className="problem-list-panel-header">
+
+            <div className="problem-list-panel-title">
+
+                <h2>
+                    Problem List
+                </h2>
+
+                <span className="problem-list-count">
+                    {solvedQuestionCount}/
+                    {problemListQuestions.length}
+                    {" "}Solved
+                </span>
+
+            </div>
+
+
+            <button
+                className="problem-list-close"
+                onClick={handleProblemListClose}
+                title="Close Problem List"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        {/* =========================================
+           SEARCH + FILTER
+        ========================================= */}
+
+        <div className="problem-list-controls">
+
+            {/* SEARCH */}
+
+            <div className="problem-list-search">
+
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                >
+
+                    <circle
+                        cx="11"
+                        cy="11"
+                        r="7"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                    />
+
+                    <path
+                        d="M16.5 16.5L21 21"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                    />
+
+                </svg>
+
+
+                <input
+                    type="text"
+                    placeholder="Search questions"
+                    value={problemListSearch}
+                    onChange={(event) =>
+                        setProblemListSearch(
+                            event.target.value
+                        )
+                    }
+                />
+
+            </div>
+
+
+            {/* DIFFICULTY FILTER */}
+
+            <select
+                className="problem-list-difficulty"
+                value={problemListDifficulty}
+                onChange={(event) =>
+                    setProblemListDifficulty(
+                        event.target.value
+                    )
+                }
+            >
+
+                <option value="all">
+                    All
+                </option>
+
+                <option value="Easy">
+                    Easy
+                </option>
+
+                <option value="Medium">
+                    Medium
+                </option>
+
+                <option value="Hard">
+                    Hard
+                </option>
+
+            </select>
+
+        </div>
+
+
+        {/* =========================================
+           QUESTION LIST
+        ========================================= */}
+
+        <div className="problem-list-items">
+
+            {problemListLoading && (
+
+                <div className="problem-list-message">
+                    Loading questions...
+                </div>
+
+            )}
+
+
+            {!problemListLoading &&
+                problemListError && (
+
+                    <div className="problem-list-message problem-list-error">
+                        {problemListError}
+                    </div>
+
+                )}
+
+
+            {!problemListLoading &&
+                !problemListError &&
+                filteredProblemList.length === 0 && (
+
+                    <div className="problem-list-message">
+                        No questions found.
+                    </div>
+
+                )}
+
+
+            {!problemListLoading &&
+                !problemListError &&
+                filteredProblemList.map(
+                    (problem) => {
+
+                        const isCurrent =
+                            Number(
+                                problem.question_id
+                            ) === Number(id);
+
+                        const isSolved =
+                            Number(
+                                problem.isSolved
+                            ) === 1;
+
+                        return (
+
+                            <button
+                                key={
+                                    problem.question_id
+                                }
+                                className={`problem-list-item ${
+                                    isCurrent
+                                        ? "current"
+                                        : ""
+                                }`}
+                                onClick={() =>
+                                    goToQuestion(
+                                        problem.question_id
+                                    )
+                                }
+                            >
+
+                                {/* SOLVED */}
+
+                                <span className="problem-list-solved">
+
+                                    {isSolved
+                                        ? "✓"
+                                        : ""}
+
+                                </span>
+
+
+                                {/* NUMBER + TITLE */}
+
+                                <span className="problem-list-question">
+
+                                    <span className="problem-list-number">
+                                        {problem.question_id}.
+                                    </span>
+
+                                    <span className="problem-list-name">
+                                        {problem.title}
+                                    </span>
+
+                                </span>
+
+
+                                {/* DIFFICULTY */}
+
+                                <span
+                                    className={`problem-list-difficulty-text ${
+                                        problem.difficulty
+                                            ?.toLowerCase()
+                                    }`}
+                                >
+                                    {problem.difficulty ===
+                                    "Medium"
+                                        ? "Med."
+                                        : problem.difficulty}
+                                </span>
+
+                            </button>
+
+                        );
+
+                    }
+                )}
+
+        </div>
+
+    </div>
+
+)}
 
                     {/* =========================================
         DESCRIPTION NAVIGATION

@@ -628,7 +628,12 @@ function Dashboard() {
                         </button>
 
 
-                        <button className="sidebar-item">
+                        <button
+                            className="sidebar-item"
+                            onClick={() =>
+                                navigate("/interviews")
+                            }
+                        >
 
                             <svg
                                 width="19"
@@ -676,7 +681,12 @@ function Dashboard() {
                         </button>
 
 
-                        <button className="sidebar-item">
+                        <button
+                            className="sidebar-item"
+                            onClick={() =>
+                                navigate("/notes")
+                            }
+                        >
 
                             <svg
                                 width="19"
@@ -722,8 +732,12 @@ function Dashboard() {
                         </button>
 
 
-                        <button className="sidebar-item">
-
+                        <button
+                            className="sidebar-item"
+                            onClick={() =>
+                                navigate("/progress")
+                            }
+                        >
                             <svg
                                 width="19"
                                 height="19"
@@ -935,7 +949,7 @@ function Dashboard() {
                             </button>
 
 
-                           
+
                         </>
 
                     )}

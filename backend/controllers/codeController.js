@@ -356,11 +356,12 @@ const submitCode = async (req, res) => {
         // 2. JUDGE CODE
         // =============================================
 
-        const result =
-            await judgeCode(
-                code,
-                questionId
-            );
+       const result =
+    await judgeCode(
+        code,
+        questionId,
+        language
+    );
 
         // =============================================
         // 3. SAVE SUBMISSION HISTORY

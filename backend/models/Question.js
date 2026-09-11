@@ -36,7 +36,6 @@ const getAllQuestions = (userId, callback) => {
     db.query(sql, [userId, userId], callback);
 };
 
-// Get question by ID
 // Get question by ID for logged-in user
 const getQuestionById = (userId, questionId, callback) => {
 
@@ -257,9 +256,6 @@ ORDER BY example_number ASC
     );
 };
 
-
-
-// Search questions
 // Search questions for logged-in user
 const searchQuestions = (userId, keyword, callback) => {
 
@@ -302,7 +298,6 @@ const searchQuestions = (userId, keyword, callback) => {
     );
 };
 
-// Get questions by difficulty
 // Get questions by difficulty for logged-in user
 const getQuestionsByDifficulty = (userId, difficulty, callback) => {
 
