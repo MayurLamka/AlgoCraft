@@ -1,7 +1,10 @@
 const db = require("../config/db");
 
 const {
-    judgeCpp
+    judgeCpp,
+    judgeJava,
+    judgePython,
+    judgeJavaScript
 } = require("./codeRunner");
 
 
@@ -149,7 +152,8 @@ const parseTestResults = (
 
 const judgeCode = async (
     code,
-    questionId
+    questionId,
+    language
 ) => {
 
     try {
@@ -185,11 +189,66 @@ const judgeCode = async (
         // 2. COMPILE ONCE + RUN ALL
         // =============================================
 
-        const execution =
+       let execution;
+
+switch (language.toLowerCase()) {
+
+    case "cpp":
+
+        execution =
             await judgeCpp(
                 code,
                 testCases
             );
+
+        break;
+
+
+    case "java":
+
+        execution =
+            await judgeJava(
+                code,
+                testCases
+            );
+
+        break;
+
+
+    case "python":
+
+        execution =
+            await judgePython(
+                code,
+                testCases
+            );
+
+        break;
+
+
+    case "javascript":
+
+        execution =
+            await judgeJavaScript(
+                code,
+                testCases
+            );
+
+        break;
+
+
+    default:
+
+        return {
+
+            success: false,
+
+            status: "Unsupported Language",
+
+            message:
+                `Unsupported language: ${language}`
+        };
+}
 
 
         // =============================================

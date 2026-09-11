@@ -313,23 +313,7 @@ const submitCode = async (req, res) => {
         }
 
 
-        // =============================================
-        // CURRENTLY SUPPORT C++
-        // =============================================
-
-        if (
-            language.toLowerCase() !== "cpp"
-        ) {
-
-            return res.status(400).json({
-
-                success: false,
-
-                message:
-                    "Only C++ is currently supported"
-            });
-        }
-
+        
 
         // =============================================
         // 1. SAVE USER CODE
