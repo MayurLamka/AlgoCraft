@@ -9,7 +9,9 @@ const {
     getQuestionsByDifficulty,
     getQuestionsByTopic,
     getCodeTemplate,
-    saveUserCode
+    saveUserCode,
+    toggleRevision,
+    getRevisionQuestions
 } = require("../controllers/questionController");
 
 const authMiddleware =
@@ -48,6 +50,20 @@ router.get(
 );
 
 
+// GET REVISION QUESTIONS
+router.get(
+    "/revision",
+    authMiddleware,
+    getRevisionQuestions
+);
+
+// TOGGLE REVISION
+router.post(
+    "/revision/:questionId",
+    authMiddleware,
+    toggleRevision
+);
+
 // Get question by ID
 router.get(
     "/:id",
@@ -66,6 +82,8 @@ router.post(
     "/:questionId/code/save",
     authMiddleware,
     saveUserCode
-);
+)
+ 
+
 
 module.exports = router;

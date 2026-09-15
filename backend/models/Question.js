@@ -11,6 +11,11 @@ const getAllQuestions = (userId, callback) => {
             q.youtube_link,
 
             CASE
+                WHEN rq.question_id IS NOT NULL THEN true
+                ELSE false
+            END AS isRevision,
+
+            CASE
                 WHEN sq.question_id IS NOT NULL THEN true
                 ELSE false
             END AS isSaved,
@@ -21,6 +26,10 @@ const getAllQuestions = (userId, callback) => {
             END AS isSolved
 
         FROM questions q
+
+        LEFT JOIN revision_questions rq
+            ON q.question_id = rq.question_id
+            AND rq.user_id = ?
 
         LEFT JOIN saved_questions sq
             ON q.question_id = sq.question_id
@@ -33,7 +42,157 @@ const getAllQuestions = (userId, callback) => {
         ORDER BY q.question_id ASC
     `;
 
-    db.query(sql, [userId, userId], callback);
+    db.query(
+        sql,
+        [
+            userId,
+            userId,
+            userId
+        ],
+        callback
+    );
+};
+
+// =====================================================
+// TOGGLE REVISION
+// =====================================================
+
+const toggleRevision = (userId, questionId, callback) => {
+
+    const checkSql = `
+        SELECT revision_id
+        FROM revision_questions
+        WHERE user_id = ?
+        AND question_id = ?
+        LIMIT 1
+    `;
+
+    db.query(
+        checkSql,
+        [userId, questionId],
+        (error, results) => {
+
+            if (error) {
+                return callback(error);
+            }
+
+            // ==============================
+            // REMOVE FROM REVISION
+            // ==============================
+
+            if (results.length > 0) {
+
+                const deleteSql = `
+                    DELETE FROM revision_questions
+                    WHERE user_id = ?
+                    AND question_id = ?
+                `;
+
+                db.query(
+                    deleteSql,
+                    [userId, questionId],
+                    (error) => {
+
+                        if (error) {
+                            return callback(error);
+                        }
+
+                        callback(null, {
+                            isRevision: false
+                        });
+
+                    }
+                );
+
+                return;
+            }
+
+
+            // ==============================
+            // ADD TO REVISION
+            // ==============================
+
+            const insertSql = `
+                INSERT INTO revision_questions
+                    (user_id, question_id)
+                VALUES (?, ?)
+            `;
+
+            db.query(
+                insertSql,
+                [userId, questionId],
+                (error) => {
+
+                    if (error) {
+                        return callback(error);
+                    }
+
+                    callback(null, {
+                        isRevision: true
+                    });
+
+                }
+            );
+
+        }
+    );
+};
+
+
+// =====================================================
+// GET REVISION QUESTIONS
+// =====================================================
+
+const getRevisionQuestions = (userId, callback) => {
+
+    const sql = `
+        SELECT
+            q.question_id,
+            q.title,
+            q.difficulty,
+            q.youtube_link,
+
+            1 AS isRevision,
+
+            CASE
+                WHEN sq.question_id IS NOT NULL
+                THEN 1
+                ELSE 0
+            END AS isSaved,
+
+            CASE
+                WHEN sol.question_id IS NOT NULL
+                THEN 1
+                ELSE 0
+            END AS isSolved
+
+        FROM revision_questions rq
+
+        INNER JOIN questions q
+            ON rq.question_id = q.question_id
+
+        LEFT JOIN saved_questions sq
+            ON q.question_id = sq.question_id
+            AND sq.user_id = ?
+
+        LEFT JOIN solved_questions sol
+            ON q.question_id = sol.question_id
+            AND sol.user_id = ?
+
+        WHERE rq.user_id = ?
+
+        ORDER BY rq.created_at DESC
+    `;
+
+    db.query(
+        sql,
+        [
+            userId,
+            userId,
+            userId
+        ],
+        callback
+    );
 };
 
 // Get question by ID for logged-in user
@@ -54,27 +213,41 @@ const getQuestionById = (userId, questionId, callback) => {
             END AS isSaved,
 
             CASE
+    WHEN rq.question_id IS NOT NULL THEN true
+    ELSE false
+END AS isRevision,
+
+            CASE
                 WHEN sol.question_id IS NOT NULL THEN true
                 ELSE false
             END AS isSolved
 
         FROM questions q
 
-        LEFT JOIN saved_questions sq
-            ON q.question_id = sq.question_id
-            AND sq.user_id = ?
+        LEFT JOIN revision_questions rq
+    ON q.question_id = rq.question_id
+    AND rq.user_id = ?
 
-        LEFT JOIN solved_questions sol
-            ON q.question_id = sol.question_id
-            AND sol.user_id = ?
+LEFT JOIN saved_questions sq
+    ON q.question_id = sq.question_id
+    AND sq.user_id = ?
 
-        WHERE q.question_id = ?
+LEFT JOIN solved_questions sol
+    ON q.question_id = sol.question_id
+    AND sol.user_id = ?
+
+WHERE q.question_id = ?
     `;
 
 
     db.query(
         questionSql,
-        [userId, userId, questionId],
+        [
+            userId,       // revision_questions
+            userId,       // saved_questions
+            userId,       // solved_questions
+            questionId    // WHERE question_id
+        ],
         (error, questionResults) => {
 
             if (error) {
@@ -272,28 +445,42 @@ const searchQuestions = (userId, keyword, callback) => {
             END AS isSaved,
 
             CASE
+    WHEN rq.question_id IS NOT NULL THEN true
+    ELSE false
+END AS isRevision,
+
+            CASE
                 WHEN sol.question_id IS NOT NULL THEN true
                 ELSE false
             END AS isSolved
 
         FROM questions q
 
-        LEFT JOIN saved_questions sq
-            ON q.question_id = sq.question_id
-            AND sq.user_id = ?
+       LEFT JOIN revision_questions rq
+    ON q.question_id = rq.question_id
+    AND rq.user_id = ?
 
-        LEFT JOIN solved_questions sol
-            ON q.question_id = sol.question_id
-            AND sol.user_id = ?
+LEFT JOIN saved_questions sq
+    ON q.question_id = sq.question_id
+    AND sq.user_id = ?
 
-        WHERE q.title LIKE ?
+LEFT JOIN solved_questions sol
+    ON q.question_id = sol.question_id
+    AND sol.user_id = ?
+
+WHERE q.title LIKE ?
 
         ORDER BY q.question_id ASC
     `;
 
     db.query(
         sql,
-        [userId, userId, `%${keyword}%`],
+        [
+            userId,              // revision
+            userId,              // saved
+            userId,              // solved
+            `%${keyword}%`
+        ],
         callback
     );
 };
@@ -314,77 +501,105 @@ const getQuestionsByDifficulty = (userId, difficulty, callback) => {
             END AS isSaved,
 
             CASE
+    WHEN rq.question_id IS NOT NULL THEN true
+    ELSE false
+END AS isRevision,
+
+            CASE
                 WHEN sol.question_id IS NOT NULL THEN true
                 ELSE false
             END AS isSolved
 
         FROM questions q
 
-        LEFT JOIN saved_questions sq
-            ON q.question_id = sq.question_id
-            AND sq.user_id = ?
+        LEFT JOIN revision_questions rq
+    ON q.question_id = rq.question_id
+    AND rq.user_id = ?
 
-        LEFT JOIN solved_questions sol
-            ON q.question_id = sol.question_id
-            AND sol.user_id = ?
+LEFT JOIN saved_questions sq
+    ON q.question_id = sq.question_id
+    AND sq.user_id = ?
 
-        WHERE q.difficulty = ?
+LEFT JOIN solved_questions sol
+    ON q.question_id = sol.question_id
+    AND sol.user_id = ?
+
+WHERE q.difficulty = ?
 
         ORDER BY q.question_id ASC
     `;
 
     db.query(
         sql,
-        [userId, userId, difficulty],
+        [
+            userId,
+            userId,
+            userId,
+            difficulty
+        ],
         callback
     );
 };
 
-// Get questions by topic
+
 // Get questions by topic for logged-in user
 const getQuestionsByTopic = (userId, topicName, callback) => {
 
     const sql = `
-        SELECT
-            q.question_id,
-            q.title,
-            q.difficulty,
-            q.youtube_link,
+    SELECT
+        q.question_id,
+        q.title,
+        q.difficulty,
+        q.youtube_link,
 
-            CASE
-                WHEN sq.question_id IS NOT NULL THEN true
-                ELSE false
-            END AS isSaved,
+        CASE
+            WHEN rq.question_id IS NOT NULL THEN true
+            ELSE false
+        END AS isRevision,
 
-            CASE
-                WHEN sol.question_id IS NOT NULL THEN true
-                ELSE false
-            END AS isSolved
+        CASE
+            WHEN sq.question_id IS NOT NULL THEN true
+            ELSE false
+        END AS isSaved,
 
-        FROM questions q
+        CASE
+            WHEN sol.question_id IS NOT NULL THEN true
+            ELSE false
+        END AS isSolved
 
-        JOIN question_topics qt
-            ON q.question_id = qt.question_id
+    FROM questions q
 
-        JOIN topics t
-            ON qt.topic_id = t.topic_id
+    JOIN question_topics qt
+        ON q.question_id = qt.question_id
 
-        LEFT JOIN saved_questions sq
-            ON q.question_id = sq.question_id
-            AND sq.user_id = ?
+    JOIN topics t
+        ON qt.topic_id = t.topic_id
 
-        LEFT JOIN solved_questions sol
-            ON q.question_id = sol.question_id
-            AND sol.user_id = ?
+    LEFT JOIN revision_questions rq
+        ON q.question_id = rq.question_id
+        AND rq.user_id = ?
 
-        WHERE t.name = ?
+    LEFT JOIN saved_questions sq
+        ON q.question_id = sq.question_id
+        AND sq.user_id = ?
 
-        ORDER BY q.question_id ASC
-    `;
+    LEFT JOIN solved_questions sol
+        ON q.question_id = sol.question_id
+        AND sol.user_id = ?
+
+    WHERE t.name = ?
+
+    ORDER BY q.question_id ASC
+`;
 
     db.query(
         sql,
-        [userId, userId, topicName],
+        [
+            userId,       // revision
+            userId,       // saved
+            userId,       // solved
+            topicName
+        ],
         callback
     );
 };
@@ -433,6 +648,8 @@ const getAllQuestionsAdmin = (callback) => {
 
     db.query(sql, callback);
 };
+
+
 
 // Update question
 const updateQuestion = (
@@ -750,5 +967,8 @@ module.exports = {
     getAdminQuestionById,
     updateQuestion,
     deleteQuestion,
-    getCodeTemplate
+    getCodeTemplate,
+
+    toggleRevision,
+    getRevisionQuestions
 };

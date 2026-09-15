@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -11,6 +13,7 @@ import EditQuestion from "./pages/EditQuestion";
 import Interviews from "./pages/Interviews";
 import Notes from "./pages/Notes";
 import Progress from "./pages/Progress";
+import Revision from "./pages/Revision";
 
 function App() {
   return (
@@ -19,6 +22,10 @@ function App() {
       <Routes>
 
         <Route path="/" element={<Home />} />
+
+        <Route path="/about" element={<About />} />
+
+        <Route path="/contact" element={<Contact />} />
 
         <Route path="/login" element={<Login />} />
 
@@ -59,6 +66,11 @@ function App() {
         <Route
           path="/progress"
           element={<Progress />}
+        />
+
+        <Route
+          path="/revision"
+          element={<Revision />}
         />
 
       </Routes>

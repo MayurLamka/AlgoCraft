@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import algoCraftLogo from "../assets/algocraft-logo.svg";
+import PublicNavbar from "../components/PublicNavbar";
 
 function Dashboard() {
 
@@ -29,6 +29,7 @@ function Dashboard() {
 
     const [dashboardLoading, setDashboardLoading] = useState(true);
     const navigate = useNavigate();
+    const [revisionLoading, setRevisionLoading] = useState(false);
 
 
     /* =========================================
@@ -364,214 +365,72 @@ function Dashboard() {
 
     };
 
+    // =====================================================
+    // TOGGLE REVISION
+    // =====================================================
+
+    const handleRevisionToggle = async (questionId) => {
+
+    try {
+
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+            `http://localhost:5000/api/questions/revision/${questionId}`,
+            {
+                method: "POST",
+
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        console.log(
+            "REVISION RESPONSE:",
+            data
+        );
+
+        if (!response.ok || !data.success) {
+
+            console.error(
+                "Revision failed:",
+                data.message
+            );
+
+            return;
+        }
+
+        setQuestions((previousQuestions) =>
+            previousQuestions.map((question) =>
+                question.question_id === questionId
+                    ? {
+                        ...question,
+                        isRevision: data.isRevision
+                    }
+                    : question
+            )
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Revision request failed:",
+            error
+        );
+
+    }
+};
+
 
     return (
 
         <div className="dashboard">
 
 
-            {/* =========================================
-               NAVBAR
-            ========================================= */}
-
-            <header className="navbar">
-
-                <div className="navbar-logo">
-
-                    <img
-                        src={algoCraftLogo}
-                        alt="AlgoCraft"
-                        className="algocraft-logo"
-                    />
-
-                </div>
-
-
-                <nav className="navbar-links">
-
-                    <a href="#">
-                        Home
-                    </a>
-
-                    <a href="#">
-                        About
-                    </a>
-
-                    <a href="#">
-                        Contact
-                    </a>
-
-                </nav>
-
-
-                <div className="navbar-right">
-
-                    {/* PREMIUM */}
-
-                    <button className="premium-button">
-
-                        <svg
-                            width="17"
-                            height="17"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                        >
-
-                            <path
-                                d="M3 6L6 18H18L21 6L16 11L12 4L8 11L3 6Z"
-                                stroke="currentColor"
-                                strokeWidth="1.8"
-                                strokeLinejoin="round"
-                            />
-
-                        </svg>
-
-                        <span>
-                            Premium
-                        </span>
-
-                    </button>
-
-
-                    {/* THEME */}
-
-                    <button
-                        className="theme-button"
-                        title="Change theme"
-                    >
-
-                        <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                        >
-
-                            <circle
-                                cx="12"
-                                cy="12"
-                                r="4"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                            />
-
-                            <path
-                                d="M12 2V4"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                            />
-
-                            <path
-                                d="M12 20V22"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                            />
-
-                            <path
-                                d="M4.93 4.93L6.34 6.34"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                            />
-
-                            <path
-                                d="M17.66 17.66L19.07 19.07"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                            />
-
-                            <path
-                                d="M2 12H4"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                            />
-
-                            <path
-                                d="M20 12H22"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                            />
-
-                        </svg>
-
-                    </button>
-
-
-                    {/* STREAK */}
-
-                    <button className="streak-button">
-
-                        <svg
-                            width="17"
-                            height="17"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                        >
-
-                            <path
-                                d="M12 22C16.4 22 20 18.7 20 14.5C20 11.2 18.1 8.5 15.4 6.2C15.6 9.1 14.1 10.8 12.5 11.6C12.9 8.1 11.1 4.7 7.8 2C8.1 5.9 5 8.2 4.2 11.7C3.1 16.5 6.3 22 12 22Z"
-                                fill="currentColor"
-                            />
-
-                        </svg>
-
-                        <span>
-                            Streak
-                        </span>
-
-                    </button>
-
-
-                    {/* PROFILE */}
-
-                    <div className="profile">
-
-                        <div className="profile-avatar">
-
-                            <svg
-                                width="18"
-                                height="18"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                            >
-
-                                <circle
-                                    cx="12"
-                                    cy="8"
-                                    r="4"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                />
-
-                                <path
-                                    d="M4 21C4.8 16.8 7.4 14 12 14C16.6 14 19.2 16.8 20 21"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                />
-
-                            </svg>
-
-                        </div>
-
-                        <span>
-                            User
-                        </span>
-
-                        <span className="profile-arrow">
-                            ▼
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </header>
+            <PublicNavbar />
 
 
             {/* =========================================
@@ -789,10 +648,16 @@ function Dashboard() {
 
                     <div className="sidebar-section-title">
                         MY LISTS
-                    </div>
+                    
 
 
-                    <button className="sidebar-item">
+
+
+
+                    <button
+                        className="sidebar-item"
+                        onClick={() => navigate("/revision")}
+                    >
 
                         <svg
                             width="19"
@@ -811,35 +676,12 @@ function Dashboard() {
                         </svg>
 
                         <span>
-                            Favorite
-                        </span>
-
-                    </button>
-
-
-                    <button className="sidebar-item">
-
-                        <svg
-                            width="19"
-                            height="19"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                        >
-
-                            <path
-                                d="M4 5.5C4 4.67 4.67 4 5.5 4H10L12 6H18.5C19.33 6 20 6.67 20 7.5V18.5C20 19.33 19.33 20 18.5 20H5.5C4.67 20 4 19.33 4 18.5V5.5Z"
-                                stroke="currentColor"
-                                strokeWidth="1.7"
-                                strokeLinejoin="round"
-                            />
-
-                        </svg>
-
-                        <span>
                             Revision
                         </span>
 
                     </button>
+
+                    </div>
 
 
                     {/* =========================================
@@ -849,11 +691,11 @@ function Dashboard() {
 
                     {isAdmin && (
 
+
                         <>
 
-                            <div className="sidebar-divider admin-divider"></div>
 
-                            <div className="sidebar-section-title admin-section-title">
+                            <div className="sidebar-section-title admin-section-title ">
                                 ADMIN
                             </div>
 
@@ -1227,7 +1069,7 @@ function Dashboard() {
                                             </th>
 
                                             <th className="favorite-column">
-                                                Favourite
+                                                Rivision
                                             </th>
 
                                         </tr>
@@ -1357,17 +1199,28 @@ function Dashboard() {
 
                                                     <td className="favorite-column">
 
-                                                        <span
+                                                        <button
+                                                            type="button"
                                                             className={
-                                                                question.isSaved
-                                                                    ? "favorite-icon saved"
-                                                                    : "favorite-icon"
+                                                                question.isRevision
+                                                                    ? "revision-icon revision-saved"
+                                                                    : "revision-icon"
+                                                            }
+                                                            onClick={() =>
+                                                                handleRevisionToggle(
+                                                                    question.question_id
+                                                                )
+                                                            }
+                                                            title={
+                                                                question.isRevision
+                                                                    ? "Remove from Revision"
+                                                                    : "Add to Revision"
                                                             }
                                                         >
-                                                            {question.isSaved
-                                                                ? "★"
-                                                                : "☆"}
-                                                        </span>
+
+                                                            {question.isRevision ? "★" : "☆"}
+
+                                                        </button>
 
                                                     </td>
 

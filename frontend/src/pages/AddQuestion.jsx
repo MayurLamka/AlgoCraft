@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PageLayout from "../components/PageLayout";
 
 function AddQuestion() {
 
@@ -122,7 +123,7 @@ function AddQuestion() {
 
                 const data =
                     await response.json();
-                
+
 
                 if (!response.ok || !data.success) {
                     throw new Error(
@@ -635,721 +636,667 @@ function AddQuestion() {
 
     return (
 
-        <div className="admin-page">
+        <PageLayout activePage="add-question">
 
-            <div className="admin-page-header">
+            <div className="admin-page">
 
-                <div>
+                <div className="admin-page-header">
 
-                    <h1>
-                        Add Question
-                    </h1>
+                    <div>
 
-                    <p>
-                        Create a complete DSA question
-                    </p>
+                        <h1>
+                            Add Question
+                        </h1>
+
+                        <p>
+                            Create a complete DSA question
+                        </p>
+
+                    </div>
+
+                    
 
                 </div>
 
-                <button
-                    className="admin-back-button"
-                    type="button"
-                    onClick={() =>
-                        navigate("/admin/questions")
-                    }
+
+                {error && (
+
+                    <div className="admin-alert admin-alert-error">
+                        {error}
+                    </div>
+
+                )}
+
+
+                {success && (
+
+                    <div className="admin-alert admin-alert-success">
+                        {success}
+                    </div>
+
+                )}
+
+
+                <form
+                    className="admin-question-form"
+                    onSubmit={handleSubmit}
                 >
-                    ← Back
-                </button>
 
-            </div>
-
-
-            {error && (
-
-                <div className="admin-alert admin-alert-error">
-                    {error}
-                </div>
-
-            )}
-
-
-            {success && (
-
-                <div className="admin-alert admin-alert-success">
-                    {success}
-                </div>
-
-            )}
-
-
-            <form
-                className="admin-question-form"
-                onSubmit={handleSubmit}
-            >
-
-                {/* =====================================
+                    {/* =====================================
                     BASIC INFORMATION
                 ===================================== */}
 
-                <section className="admin-card">
+                    <section className="admin-card">
 
-                    <div className="admin-card-title">
-                        <span>01</span>
-                        Basic Information
-                    </div>
-
-                    <div className="admin-form-group">
-
-                        <label>
-                            Question Title *
-                        </label>
-
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) =>
-                                setTitle(e.target.value)
-                            }
-                            placeholder="Enter question title"
-                        />
-
-                    </div>
-
-
-                    <div className="admin-form-row">
-
-                        <div className="admin-form-group">
-
-                            <label>
-                                Difficulty *
-                            </label>
-
-                            <select
-                                value={difficulty}
-                                onChange={(e) =>
-                                    setDifficulty(
-                                        e.target.value
-                                    )
-                                }
-                            >
-
-                                <option value="Easy">
-                                    Easy
-                                </option>
-
-                                <option value="Medium">
-                                    Medium
-                                </option>
-
-                                <option value="Hard">
-                                    Hard
-                                </option>
-
-                            </select>
-
+                        <div className="admin-card-title">
+                            <span>01</span>
+                            Basic Information
                         </div>
 
-
                         <div className="admin-form-group">
 
                             <label>
-                                YouTube Link
+                                Question Title *
                             </label>
 
                             <input
-                                type="url"
-                                value={youtubeLink}
+                                type="text"
+                                value={title}
                                 onChange={(e) =>
-                                    setYoutubeLink(
-                                        e.target.value
-                                    )
+                                    setTitle(e.target.value)
                                 }
-                                placeholder="https://youtube.com/..."
+                                placeholder="Enter question title"
                             />
 
                         </div>
 
-                    </div>
 
+                        <div className="admin-form-row">
 
-                    <div className="admin-form-group">
+                            <div className="admin-form-group">
 
-                        <label>
-                            Topics *
-                        </label>
+                                <label>
+                                    Difficulty *
+                                </label>
 
-                        <div className="admin-topic-list">
-                           
-
-                            {topics.map((topic) => (
-                                <button
-                                    key={topic.topic_id}
-                                    type="button"
-                                    className={`admin-topic ${selectedTopics.includes(topic.topic_id)
-                                            ? "selected"
-                                            : ""
-                                        }`}
-                                    onClick={() => toggleTopic(topic.topic_id)}
+                                <select
+                                    value={difficulty}
+                                    onChange={(e) =>
+                                        setDifficulty(
+                                            e.target.value
+                                        )
+                                    }
                                 >
-                                    {topic.topic_name}
-                                </button>
-                            ))}
+
+                                    <option value="Easy">
+                                        Easy
+                                    </option>
+
+                                    <option value="Medium">
+                                        Medium
+                                    </option>
+
+                                    <option value="Hard">
+                                        Hard
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div className="admin-form-group">
+
+                                <label>
+                                    YouTube Link
+                                </label>
+
+                                <input
+                                    type="url"
+                                    value={youtubeLink}
+                                    onChange={(e) =>
+                                        setYoutubeLink(
+                                            e.target.value
+                                        )
+                                    }
+                                    placeholder="https://youtube.com/..."
+                                />
+
+                            </div>
+
                         </div>
 
-                    </div>
+
+                        <div className="admin-form-group">
+
+                            <label>
+                                Topics *
+                            </label>
+
+                            <div className="admin-topic-list">
 
 
-                    <div className="admin-form-group">
+                                {topics.map((topic) => (
+                                    <button
+                                        key={topic.topic_id}
+                                        type="button"
+                                        className={`admin-topic ${selectedTopics.includes(topic.topic_id)
+                                            ? "selected"
+                                            : ""
+                                            }`}
+                                        onClick={() => toggleTopic(topic.topic_id)}
+                                    >
+                                        {topic.topic_name}
+                                    </button>
+                                ))}
+                            </div>
 
-                        <label>
-                            Description *
-                        </label>
-
-                        <textarea
-                            rows="8"
-                            value={description}
-                            onChange={(e) =>
-                                setDescription(
-                                    e.target.value
-                                )
-                            }
-                            placeholder="Write the complete problem description..."
-                        />
-
-                    </div>
-
-                </section>
+                        </div>
 
 
-                {/* =====================================
+                        <div className="admin-form-group">
+
+                            <label>
+                                Description *
+                            </label>
+
+                            <textarea
+                                rows="8"
+                                value={description}
+                                onChange={(e) =>
+                                    setDescription(
+                                        e.target.value
+                                    )
+                                }
+                                placeholder="Write the complete problem description..."
+                            />
+
+                        </div>
+
+                    </section>
+
+
+                    {/* =====================================
                     CONSTRAINTS
                 ===================================== */}
 
-                <section className="admin-card">
+                    <section className="admin-card">
 
-                    <div className="admin-card-title">
-                        <span>02</span>
-                        Constraints
-                    </div>
+                        <div className="admin-card-title">
+                            <span>02</span>
+                            Constraints
+                        </div>
 
-                    {constraints.map(
-                        (constraint, index) => (
+                        {constraints.map(
+                            (constraint, index) => (
 
-                            <div
-                                className="admin-dynamic-row"
-                                key={index}
-                            >
-
-                                <span className="admin-number">
-                                    {index + 1}
-                                </span>
-
-                                <input
-                                    type="text"
-                                    value={constraint}
-                                    onChange={(e) =>
-                                        updateConstraint(
-                                            index,
-                                            e.target.value
-                                        )
-                                    }
-                                    placeholder="Example: 1 <= nums.length <= 10^4"
-                                />
-
-                                <button
-                                    type="button"
-                                    className="admin-remove-button"
-                                    onClick={() =>
-                                        removeConstraint(
-                                            index
-                                        )
-                                    }
+                                <div
+                                    className="admin-dynamic-row"
+                                    key={index}
                                 >
-                                    ×
-                                </button>
 
-                            </div>
+                                    <span className="admin-number">
+                                        {index + 1}
+                                    </span>
 
-                        )
-                    )}
+                                    <input
+                                        type="text"
+                                        value={constraint}
+                                        onChange={(e) =>
+                                            updateConstraint(
+                                                index,
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder="Example: 1 <= nums.length <= 10^4"
+                                    />
 
-                    <button
-                        type="button"
-                        className="admin-add-button"
-                        onClick={addConstraint}
-                    >
-                        + Add Constraint
-                    </button>
+                                    <button
+                                        type="button"
+                                        className="admin-remove-button"
+                                        onClick={() =>
+                                            removeConstraint(
+                                                index
+                                            )
+                                        }
+                                    >
+                                        ×
+                                    </button>
 
-                </section>
+                                </div>
+
+                            )
+                        )}
+
+                        <button
+                            type="button"
+                            className="admin-add-button"
+                            onClick={addConstraint}
+                        >
+                            + Add Constraint
+                        </button>
+
+                    </section>
 
 
-                {/* =====================================
+                    {/* =====================================
                     EXAMPLES
                 ===================================== */}
 
-                <section className="admin-card">
+                    <section className="admin-card">
 
-                    <div className="admin-card-title">
-                        <span>03</span>
-                        Examples
-                    </div>
+                        <div className="admin-card-title">
+                            <span>03</span>
+                            Examples
+                        </div>
 
-                    {examples.map(
-                        (example, index) => (
+                        {examples.map(
+                            (example, index) => (
 
-                            <div
-                                className="admin-example-card"
-                                key={index}
-                            >
+                                <div
+                                    className="admin-example-card"
+                                    key={index}
+                                >
 
-                                <div className="admin-section-row">
+                                    <div className="admin-section-row">
 
-                                    <h3>
-                                        Example {index + 1}
-                                    </h3>
+                                        <h3>
+                                            Example {index + 1}
+                                        </h3>
 
-                                    <button
-                                        type="button"
-                                        className="admin-remove-text"
-                                        onClick={() =>
-                                            removeExample(
-                                                index
-                                            )
-                                        }
-                                    >
-                                        Remove
-                                    </button>
+                                        <button
+                                            type="button"
+                                            className="admin-remove-text"
+                                            onClick={() =>
+                                                removeExample(
+                                                    index
+                                                )
+                                            }
+                                        >
+                                            Remove
+                                        </button>
+
+                                    </div>
+
+
+                                    <div className="admin-form-group">
+
+                                        <label>
+                                            Display Input *
+                                        </label>
+
+                                        <textarea
+                                            rows="3"
+                                            value={example.input}
+                                            onChange={(e) =>
+                                                updateExample(
+                                                    index,
+                                                    "input",
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="Example: nums = [2,7,11,15], target = 9"
+                                        />
+
+                                    </div>
+
+
+                                    <div className="admin-form-group">
+
+                                        <label>
+                                            Execution Input
+                                        </label>
+
+                                        <textarea
+                                            rows="3"
+                                            value={
+                                                example.execution_input
+                                            }
+                                            onChange={(e) =>
+                                                updateExample(
+                                                    index,
+                                                    "execution_input",
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder={"Example:\n4\n2 7 11 15\n9"}
+                                        />
+
+                                        <small>
+                                            Actual stdin sent to the program.
+                                        </small>
+
+                                    </div>
+
+
+                                    <div className="admin-form-group">
+
+                                        <label>
+                                            Output *
+                                        </label>
+
+                                        <textarea
+                                            rows="3"
+                                            value={example.output}
+                                            onChange={(e) =>
+                                                updateExample(
+                                                    index,
+                                                    "output",
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="Example: [0,1]"
+                                        />
+
+                                    </div>
+
+
+                                    <div className="admin-form-group">
+
+                                        <label>
+                                            Explanation
+                                        </label>
+
+                                        <textarea
+                                            rows="3"
+                                            value={
+                                                example.explanation
+                                            }
+                                            onChange={(e) =>
+                                                updateExample(
+                                                    index,
+                                                    "explanation",
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="Explain why this output is correct..."
+                                        />
+
+                                    </div>
 
                                 </div>
 
+                            )
+                        )}
 
-                                <div className="admin-form-group">
+                        <button
+                            type="button"
+                            className="admin-add-button"
+                            onClick={addExample}
+                        >
+                            + Add Example
+                        </button>
 
-                                    <label>
-                                        Display Input *
-                                    </label>
-
-                                    <textarea
-                                        rows="3"
-                                        value={example.input}
-                                        onChange={(e) =>
-                                            updateExample(
-                                                index,
-                                                "input",
-                                                e.target.value
-                                            )
-                                        }
-                                        placeholder="Example: nums = [2,7,11,15], target = 9"
-                                    />
-
-                                </div>
+                    </section>
 
 
-                                <div className="admin-form-group">
-
-                                    <label>
-                                        Execution Input
-                                    </label>
-
-                                    <textarea
-                                        rows="3"
-                                        value={
-                                            example.execution_input
-                                        }
-                                        onChange={(e) =>
-                                            updateExample(
-                                                index,
-                                                "execution_input",
-                                                e.target.value
-                                            )
-                                        }
-                                        placeholder={"Example:\n4\n2 7 11 15\n9"}
-                                    />
-
-                                    <small>
-                                        Actual stdin sent to the program.
-                                    </small>
-
-                                </div>
-
-
-                                <div className="admin-form-group">
-
-                                    <label>
-                                        Output *
-                                    </label>
-
-                                    <textarea
-                                        rows="3"
-                                        value={example.output}
-                                        onChange={(e) =>
-                                            updateExample(
-                                                index,
-                                                "output",
-                                                e.target.value
-                                            )
-                                        }
-                                        placeholder="Example: [0,1]"
-                                    />
-
-                                </div>
-
-
-                                <div className="admin-form-group">
-
-                                    <label>
-                                        Explanation
-                                    </label>
-
-                                    <textarea
-                                        rows="3"
-                                        value={
-                                            example.explanation
-                                        }
-                                        onChange={(e) =>
-                                            updateExample(
-                                                index,
-                                                "explanation",
-                                                e.target.value
-                                            )
-                                        }
-                                        placeholder="Explain why this output is correct..."
-                                    />
-
-                                </div>
-
-                            </div>
-
-                        )
-                    )}
-
-                    <button
-                        type="button"
-                        className="admin-add-button"
-                        onClick={addExample}
-                    >
-                        + Add Example
-                    </button>
-
-                </section>
-
-
-                {/* =====================================
+                    {/* =====================================
                     HINTS
                 ===================================== */}
 
-                <section className="admin-card">
+                    <section className="admin-card">
 
-                    <div className="admin-card-title">
-                        <span>04</span>
-                        Hints
-                    </div>
+                        <div className="admin-card-title">
+                            <span>04</span>
+                            Hints
+                        </div>
 
-                    {hints.map(
-                        (hint, index) => (
+                        {hints.map(
+                            (hint, index) => (
 
-                            <div
-                                className="admin-dynamic-row"
-                                key={index}
-                            >
-
-                                <span className="admin-number">
-                                    {index + 1}
-                                </span>
-
-                                <textarea
-                                    rows="2"
-                                    value={hint}
-                                    onChange={(e) =>
-                                        updateHint(
-                                            index,
-                                            e.target.value
-                                        )
-                                    }
-                                    placeholder="Enter hint..."
-                                />
-
-                                <button
-                                    type="button"
-                                    className="admin-remove-button"
-                                    onClick={() =>
-                                        removeHint(
-                                            index
-                                        )
-                                    }
+                                <div
+                                    className="admin-dynamic-row"
+                                    key={index}
                                 >
-                                    ×
-                                </button>
 
-                            </div>
+                                    <span className="admin-number">
+                                        {index + 1}
+                                    </span>
 
-                        )
-                    )}
-
-                    <button
-                        type="button"
-                        className="admin-add-button"
-                        onClick={addHint}
-                    >
-                        + Add Hint
-                    </button>
-
-                </section>
-
-
-                {/* =====================================
-                    TEST CASES
-                ===================================== */}
-
-                <section className="admin-card">
-
-                    <div className="admin-card-title">
-                        <span>05</span>
-                        Test Cases
-                    </div>
-
-                    {testCases.map(
-                        (testCase, index) => (
-
-                            <div
-                                className="admin-example-card"
-                                key={index}
-                            >
-
-                                <div className="admin-section-row">
-
-                                    <h3>
-                                        Test Case {index + 1}
-                                    </h3>
+                                    <textarea
+                                        rows="2"
+                                        value={hint}
+                                        onChange={(e) =>
+                                            updateHint(
+                                                index,
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder="Enter hint..."
+                                    />
 
                                     <button
                                         type="button"
-                                        className="admin-remove-text"
+                                        className="admin-remove-button"
                                         onClick={() =>
-                                            removeTestCase(
+                                            removeHint(
                                                 index
                                             )
                                         }
                                     >
-                                        Remove
+                                        ×
                                     </button>
 
                                 </div>
 
+                            )
+                        )}
 
-                                <div className="admin-form-group">
+                        <button
+                            type="button"
+                            className="admin-add-button"
+                            onClick={addHint}
+                        >
+                            + Add Hint
+                        </button>
 
-                                    <label>
-                                        Input *
+                    </section>
+
+
+                    {/* =====================================
+                    TEST CASES
+                ===================================== */}
+
+                    <section className="admin-card">
+
+                        <div className="admin-card-title">
+                            <span>05</span>
+                            Test Cases
+                        </div>
+
+                        {testCases.map(
+                            (testCase, index) => (
+
+                                <div
+                                    className="admin-example-card"
+                                    key={index}
+                                >
+
+                                    <div className="admin-section-row">
+
+                                        <h3>
+                                            Test Case {index + 1}
+                                        </h3>
+
+                                        <button
+                                            type="button"
+                                            className="admin-remove-text"
+                                            onClick={() =>
+                                                removeTestCase(
+                                                    index
+                                                )
+                                            }
+                                        >
+                                            Remove
+                                        </button>
+
+                                    </div>
+
+
+                                    <div className="admin-form-group">
+
+                                        <label>
+                                            Input *
+                                        </label>
+
+                                        <textarea
+                                            rows="4"
+                                            value={
+                                                testCase.input_data
+                                            }
+                                            onChange={(e) =>
+                                                updateTestCase(
+                                                    index,
+                                                    "input_data",
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="Actual input given to the program"
+                                        />
+
+                                    </div>
+
+
+                                    <div className="admin-form-group">
+
+                                        <label>
+                                            Expected Output *
+                                        </label>
+
+                                        <textarea
+                                            rows="3"
+                                            value={
+                                                testCase.expected_output
+                                            }
+                                            onChange={(e) =>
+                                                updateTestCase(
+                                                    index,
+                                                    "expected_output",
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="Expected program output"
+                                        />
+
+                                    </div>
+
+
+                                    <label className="admin-checkbox">
+
+                                        <input
+                                            type="checkbox"
+                                            checked={
+                                                testCase.is_hidden
+                                            }
+                                            onChange={(e) =>
+                                                updateTestCase(
+                                                    index,
+                                                    "is_hidden",
+                                                    e.target.checked
+                                                )
+                                            }
+                                        />
+
+                                        Hidden Test Case
+
                                     </label>
-
-                                    <textarea
-                                        rows="4"
-                                        value={
-                                            testCase.input_data
-                                        }
-                                        onChange={(e) =>
-                                            updateTestCase(
-                                                index,
-                                                "input_data",
-                                                e.target.value
-                                            )
-                                        }
-                                        placeholder="Actual input given to the program"
-                                    />
 
                                 </div>
 
+                            )
+                        )}
 
-                                <div className="admin-form-group">
+                        <button
+                            type="button"
+                            className="admin-add-button"
+                            onClick={addTestCase}
+                        >
+                            + Add Test Case
+                        </button>
 
-                                    <label>
-                                        Expected Output *
-                                    </label>
-
-                                    <textarea
-                                        rows="3"
-                                        value={
-                                            testCase.expected_output
-                                        }
-                                        onChange={(e) =>
-                                            updateTestCase(
-                                                index,
-                                                "expected_output",
-                                                e.target.value
-                                            )
-                                        }
-                                        placeholder="Expected program output"
-                                    />
-
-                                </div>
+                    </section>
 
 
-                                <label className="admin-checkbox">
-
-                                    <input
-                                        type="checkbox"
-                                        checked={
-                                            testCase.is_hidden
-                                        }
-                                        onChange={(e) =>
-                                            updateTestCase(
-                                                index,
-                                                "is_hidden",
-                                                e.target.checked
-                                            )
-                                        }
-                                    />
-
-                                    Hidden Test Case
-
-                                </label>
-
-                            </div>
-
-                        )
-                    )}
-
-                    <button
-                        type="button"
-                        className="admin-add-button"
-                        onClick={addTestCase}
-                    >
-                        + Add Test Case
-                    </button>
-
-                </section>
-
-
-                {/* =====================================
+                    {/* =====================================
                     CODE TEMPLATES
                 ===================================== */}
 
-                <section className="admin-card">
+                    <section className="admin-card">
 
-                    <div className="admin-card-title">
-                        <span>06</span>
-                        Code Templates
-                    </div>
+                        <div className="admin-card-title">
+                            <span>06</span>
+                            Code Templates
+                        </div>
 
-                    {[
-                        ["cpp", "C++"],
-                        ["java", "Java"],
-                        ["python", "Python"],
-                        ["javascript", "JavaScript"]
-                    ].map(
-                        ([key, label]) => (
+                        {[
+                            ["cpp", "C++"],
+                            ["java", "Java"],
+                            ["python", "Python"],
+                            ["javascript", "JavaScript"]
+                        ].map(
+                            ([key, label]) => (
 
-                            <div
-                                className="admin-form-group"
-                                key={key}
-                            >
+                                <div
+                                    className="admin-form-group"
+                                    key={key}
+                                >
 
-                                <label>
-                                    {label}
-                                </label>
+                                    <label>
+                                        {label}
+                                    </label>
 
-                                <textarea
-                                    className="admin-code-textarea"
-                                    rows="12"
-                                    value={
-                                        templates[key]
-                                    }
-                                    onChange={(e) =>
-                                        updateTemplate(
-                                            key,
-                                            e.target.value
-                                        )
-                                    }
-                                    placeholder={`Enter ${label} starter code...`}
-                                />
+                                    <textarea
+                                        className="admin-code-textarea"
+                                        rows="12"
+                                        value={
+                                            templates[key]
+                                        }
+                                        onChange={(e) =>
+                                            updateTemplate(
+                                                key,
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder={`Enter ${label} starter code...`}
+                                    />
 
-                            </div>
+                                </div>
 
-                        )
-                    )}
+                            )
+                        )}
 
-                </section>
+                    </section>
 
 
-                {/* =====================================
+                    {/* =====================================
                     SOLUTION
                 ===================================== */}
 
-                <section className="admin-card">
+                    <section className="admin-card">
 
-                    <div className="admin-card-title">
-                        <span>07</span>
-                        Official Solution
-                    </div>
-
-                    <div className="admin-form-group">
-
-                        <label>
-                            Approach *
-                        </label>
-
-                        <textarea
-                            rows="5"
-                            value={
-                                solution.approach
-                            }
-                            onChange={(e) =>
-                                updateSolution(
-                                    "approach",
-                                    e.target.value
-                                )
-                            }
-                            placeholder="Explain the main idea of the solution..."
-                        />
-
-                    </div>
-
-
-                    <div className="admin-form-group">
-
-                        <label>
-                            Explanation *
-                        </label>
-
-                        <textarea
-                            rows="8"
-                            value={
-                                solution.explanation
-                            }
-                            onChange={(e) =>
-                                updateSolution(
-                                    "explanation",
-                                    e.target.value
-                                )
-                            }
-                            placeholder="Explain the solution step by step..."
-                        />
-
-                    </div>
-
-
-                    <div className="admin-form-row">
+                        <div className="admin-card-title">
+                            <span>07</span>
+                            Official Solution
+                        </div>
 
                         <div className="admin-form-group">
 
                             <label>
-                                Time Complexity
+                                Approach *
                             </label>
 
-                            <input
-                                type="text"
+                            <textarea
+                                rows="5"
                                 value={
-                                    solution.time_complexity
+                                    solution.approach
                                 }
                                 onChange={(e) =>
                                     updateSolution(
-                                        "time_complexity",
+                                        "approach",
                                         e.target.value
                                     )
                                 }
-                                placeholder="O(n)"
+                                placeholder="Explain the main idea of the solution..."
                             />
 
                         </div>
@@ -1358,113 +1305,161 @@ function AddQuestion() {
                         <div className="admin-form-group">
 
                             <label>
-                                Space Complexity
+                                Explanation *
                             </label>
 
-                            <input
-                                type="text"
+                            <textarea
+                                rows="8"
                                 value={
-                                    solution.space_complexity
+                                    solution.explanation
                                 }
                                 onChange={(e) =>
                                     updateSolution(
-                                        "space_complexity",
+                                        "explanation",
                                         e.target.value
                                     )
                                 }
-                                placeholder="O(n)"
+                                placeholder="Explain the solution step by step..."
                             />
 
                         </div>
 
-                    </div>
 
+                        <div className="admin-form-row">
 
-                    {[
-                        ["cpp", "C++"],
-                        ["java", "Java"],
-                        ["python", "Python"],
-                        ["javascript", "JavaScript"]
-                    ].map(
-                        ([key, label]) => (
-
-                            <div
-                                className="admin-form-group"
-                                key={key}
-                            >
+                            <div className="admin-form-group">
 
                                 <label>
-                                    {label} Solution
+                                    Time Complexity
                                 </label>
 
-                                <textarea
-                                    className="admin-code-textarea"
-                                    rows="14"
+                                <input
+                                    type="text"
                                     value={
-                                        solution[key]
+                                        solution.time_complexity
                                     }
                                     onChange={(e) =>
                                         updateSolution(
-                                            key,
+                                            "time_complexity",
                                             e.target.value
                                         )
                                     }
-                                    placeholder={`Enter official ${label} solution...`}
+                                    placeholder="O(n)"
                                 />
 
                             </div>
 
-                        )
-                    )}
 
-                </section>
+                            <div className="admin-form-group">
+
+                                <label>
+                                    Space Complexity
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value={
+                                        solution.space_complexity
+                                    }
+                                    onChange={(e) =>
+                                        updateSolution(
+                                            "space_complexity",
+                                            e.target.value
+                                        )
+                                    }
+                                    placeholder="O(n)"
+                                />
+
+                            </div>
+
+                        </div>
 
 
-                {/* =====================================
+                        {[
+                            ["cpp", "C++"],
+                            ["java", "Java"],
+                            ["python", "Python"],
+                            ["javascript", "JavaScript"]
+                        ].map(
+                            ([key, label]) => (
+
+                                <div
+                                    className="admin-form-group"
+                                    key={key}
+                                >
+
+                                    <label>
+                                        {label} Solution
+                                    </label>
+
+                                    <textarea
+                                        className="admin-code-textarea"
+                                        rows="14"
+                                        value={
+                                            solution[key]
+                                        }
+                                        onChange={(e) =>
+                                            updateSolution(
+                                                key,
+                                                e.target.value
+                                            )
+                                        }
+                                        placeholder={`Enter official ${label} solution...`}
+                                    />
+
+                                </div>
+
+                            )
+                        )}
+
+                    </section>
+
+
+                    {/* =====================================
                     SAVE
                 ===================================== */}
 
-                <div className="admin-submit-area">
+                    <div className="admin-submit-area">
 
-                    <button
-                        type="button"
-                        className="admin-cancel-button"
-                        onClick={() =>
-                            navigate("/admin/questions")
-                        }
-                    >
-                        Cancel
-                    </button>
+                        <button
+                            type="button"
+                            className="admin-cancel-button"
+                            onClick={() =>
+                                navigate("/admin/questions")
+                            }
+                        >
+                            Cancel
+                        </button>
 
-                    <button
-                        type="submit"
-                        className="admin-save-button"
-                        disabled={saving}
-                    >
+                        <button
+                            type="submit"
+                            className="admin-save-button"
+                            disabled={saving}
+                        >
 
-                        {saving
-                            ? "Saving..."
-                            : "Save Question"}
+                            {saving
+                                ? "Saving..."
+                                : "Save Question"}
 
-                    </button>
+                        </button>
 
-                </div>
+                    </div>
 
-                <div className="admin-save-area">
+                    <div className="admin-save-area">
 
-                    {error && (
-                        <div className="admin-error">
-                            {error}
-                        </div>
-                    )}
+                        {error && (
+                            <div className="admin-error">
+                                {error}
+                            </div>
+                        )}
 
-                    {success && (
-                        <div className="admin-success">
-                            {success}
-                        </div>
-                    )}
+                        {success && (
+                            <div className="admin-success">
+                                {success}
+                            </div>
+                        )}
 
-                    {/* <button
+                        {/* <button
         type="submit"
         className="admin-save-button"
         disabled={saving}
@@ -1474,13 +1469,13 @@ function AddQuestion() {
             : "Save Question"}
     </button> */}
 
-                </div>
+                    </div>
 
-            </form>
+                </form>
 
-        </div>
+            </div>
 
-
+        </PageLayout>
     );
 }
 

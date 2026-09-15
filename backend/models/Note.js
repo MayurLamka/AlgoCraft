@@ -1,55 +1,92 @@
 const db = require("../config/db");
 
-
-/* =========================================
-   GET ALL SUBJECTS
-========================================= */
-
-const getAllSubjects = (callback) => {
-
+const getAllNotes = (callback) => {
     const sql = `
         SELECT
-            subject_id,
-            subject_name,
+            note_id,
+            title,
             description,
-            image_url
-        FROM note_subjects
-        ORDER BY subject_id ASC
+            image_url,
+            pdf_name,
+            pdf_url,
+            created_at
+        FROM notes
+        ORDER BY note_id DESC
     `;
 
     db.query(sql, callback);
 };
 
+const createNote = (
+    title,
+    description,
+    imageUrl,
+    pdfName,
+    pdfUrl,
+    callback
+) => {
+    const sql = `
+        INSERT INTO notes
+        (
+            title,
+            description,
+            image_url,
+            pdf_name,
+            pdf_url
+        )
+        VALUES (?, ?, ?, ?, ?)
+    `;
 
-/* =========================================
-   GET FILES OF SUBJECT
-========================================= */
+    db.query(
+        sql,
+        [
+            title,
+            description,
+            imageUrl,
+            pdfName,
+            pdfUrl
+        ],
+        callback
+    );
+};
 
-const getFilesBySubject = (
-    subjectId,
+const deleteNote = (noteId, callback) => {
+    const sql = `
+        DELETE FROM notes
+        WHERE note_id = ?
+    `;
+
+    db.query(sql, [noteId], callback);
+};
+
+const getNoteById = (
+    noteId,
     callback
 ) => {
 
     const sql = `
         SELECT
-            file_id,
-            subject_id,
-            file_name,
-            file_url
-        FROM note_files
-        WHERE subject_id = ?
-        ORDER BY file_id ASC
+            note_id,
+            title,
+            description,
+            image_url,
+            pdf_name,
+            pdf_url,
+            created_at
+        FROM notes
+        WHERE note_id = ?
     `;
 
     db.query(
         sql,
-        [subjectId],
+        [noteId],
         callback
     );
 };
 
-
 module.exports = {
-    getAllSubjects,
-    getFilesBySubject
+    getAllNotes,
+    createNote,
+    deleteNote,
+    getNoteById
 };

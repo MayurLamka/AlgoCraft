@@ -3,20 +3,20 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    getAllSubjects,
-    getFilesBySubject
+    getAllNotes,
+    downloadNote
 } = require("../controllers/noteController");
 
 
 router.get(
-    "/subjects",
-    getAllSubjects
+    "/",
+    getAllNotes
 );
 
 
 router.get(
-    "/subjects/:subjectId/files",
-    getFilesBySubject
+    "/:id/download",
+    downloadNote
 );
 
 

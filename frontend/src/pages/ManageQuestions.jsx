@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PageLayout from "../components/PageLayout";
 
 const ManageQuestions = () => {
     const navigate = useNavigate();
@@ -145,185 +146,187 @@ const ManageQuestions = () => {
     };
 
     return (
-        <div className="manage-questions-page">
+        <PageLayout activePage="add-question">
+            <div className="manage-questions-page">
 
-            {/* HEADER */}
-            <div className="manage-questions-header">
+                {/* HEADER */}
+                <div className="manage-questions-header">
 
-                <div>
-                    <h1>Manage Questions</h1>
-                    <p>
-                        View, edit and manage all DSA questions.
-                    </p>
+                    <div>
+                        <h1>Manage Questions</h1>
+                        <p>
+                            View, edit and manage all DSA questions.
+                        </p>
+                    </div>
+
+                    <button
+                        className="add-question-btn"
+                        onClick={() => navigate("/admin/questions/add")}
+                    >
+                        + Add Question
+                    </button>
+
                 </div>
 
-                <button
-                    className="add-question-btn"
-                    onClick={() => navigate("/admin/questions/add")}
-                >
-                    + Add Question
-                </button>
+                {/* CONTROLS */}
+                <div className="manage-questions-controls">
 
-            </div>
+                    <div className="search-box">
+                        <input
+                            type="text"
+                            placeholder="Search questions..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
 
-            {/* CONTROLS */}
-            <div className="manage-questions-controls">
+                    <select
+                        value={difficulty}
+                        onChange={(e) => setDifficulty(e.target.value)}
+                    >
+                        <option value="All">All Difficulties</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
 
-                <div className="search-box">
-                    <input
-                        type="text"
-                        placeholder="Search questions..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
                 </div>
 
-                <select
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value)}
-                >
-                    <option value="All">All Difficulties</option>
-                    <option value="Easy">Easy</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Hard">Hard</option>
-                </select>
+                {/* ERROR */}
+                {error && (
+                    <div className="manage-questions-error">
+                        {error}
+                    </div>
+                )}
 
-            </div>
+                {/* LOADING */}
+                {loading ? (
+                    <div className="manage-questions-loading">
+                        Loading questions...
+                    </div>
+                ) : (
 
-            {/* ERROR */}
-            {error && (
-                <div className="manage-questions-error">
-                    {error}
-                </div>
-            )}
+                    <div className="questions-table-container">
 
-            {/* LOADING */}
-            {loading ? (
-                <div className="manage-questions-loading">
-                    Loading questions...
-                </div>
-            ) : (
+                        <table className="questions-table">
 
-                <div className="questions-table-container">
-
-                    <table className="questions-table">
-
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Question</th>
-                                <th>Difficulty</th>
-                                <th>Created</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            {filteredQuestions.length === 0 ? (
-
+                            <thead>
                                 <tr>
-                                    <td
-                                        colSpan="5"
-                                        className="no-questions"
-                                    >
-                                        No questions found.
-                                    </td>
+                                    <th>#</th>
+                                    <th>Question</th>
+                                    <th>Difficulty</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
                                 </tr>
+                            </thead>
 
-                            ) : (
+                            <tbody>
 
-                                filteredQuestions.map((question, index) => (
+                                {filteredQuestions.length === 0 ? (
 
-                                    <tr key={question.question_id}>
-
-                                        <td>
-                                            {index + 1}
+                                    <tr>
+                                        <td
+                                            colSpan="5"
+                                            className="no-questions"
+                                        >
+                                            No questions found.
                                         </td>
-
-                                        <td className="question-title">
-                                            {question.title}
-                                        </td>
-
-                                        <td>
-                                            <span
-                                                className={`difficulty-badge ${getDifficultyClass(
-                                                    question.difficulty
-                                                )}`}
-                                            >
-                                                {question.difficulty}
-                                            </span>
-                                        </td>
-
-                                        <td>
-                                            {question.created_at
-                                                ? new Date(
-                                                      question.created_at
-                                                  ).toLocaleDateString()
-                                                : "-"}
-                                        </td>
-
-                                        <td className="question-actions">
-
-                                            <button
-                                                className="view-btn"
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/question/${question.question_id}`
-                                                    )
-                                                }
-                                            >
-                                                View
-                                            </button>
-
-                                            <button
-                                                className="edit-btn"
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/admin/questions/${question.question_id}/edit`
-                                                    )
-                                                }
-                                            >
-                                                Edit
-                                            </button>
-
-                                            <button
-                                                className="delete-btn"
-                                                onClick={() =>
-                                                    handleDelete(
-                                                        question.question_id,
-                                                        question.title
-                                                    )
-                                                }
-                                            >
-                                                Delete
-                                            </button>
-
-                                        </td>
-
                                     </tr>
 
-                                ))
+                                ) : (
 
-                            )}
+                                    filteredQuestions.map((question, index) => (
 
-                        </tbody>
+                                        <tr key={question.question_id}>
 
-                    </table>
+                                            <td>
+                                                {index + 1}
+                                            </td>
 
-                </div>
+                                            <td className="question-title">
+                                                {question.title}
+                                            </td>
 
-            )}
+                                            <td>
+                                                <span
+                                                    className={`difficulty-badge ${getDifficultyClass(
+                                                        question.difficulty
+                                                    )}`}
+                                                >
+                                                    {question.difficulty}
+                                                </span>
+                                            </td>
 
-            {/* RESULT COUNT */}
-            {!loading && (
-                <div className="questions-count">
-                    Showing {filteredQuestions.length} of{" "}
-                    {questions.length} questions
-                </div>
-            )}
+                                            <td>
+                                                {question.created_at
+                                                    ? new Date(
+                                                        question.created_at
+                                                    ).toLocaleDateString()
+                                                    : "-"}
+                                            </td>
 
-        </div>
+                                            <td className="question-actions">
+
+                                                <button
+                                                    className="view-btn"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/question/${question.question_id}`
+                                                        )
+                                                    }
+                                                >
+                                                    View
+                                                </button>
+
+                                                <button
+                                                    className="edit-btn"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/admin/questions/${question.question_id}/edit`
+                                                        )
+                                                    }
+                                                >
+                                                    Edit
+                                                </button>
+
+                                                <button
+                                                    className="delete-btn"
+                                                    onClick={() =>
+                                                        handleDelete(
+                                                            question.question_id,
+                                                            question.title
+                                                        )
+                                                    }
+                                                >
+                                                    Delete
+                                                </button>
+
+                                            </td>
+
+                                        </tr>
+
+                                    ))
+
+                                )}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                )}
+
+                {/* RESULT COUNT */}
+                {!loading && (
+                    <div className="questions-count">
+                        Showing {filteredQuestions.length} of{" "}
+                        {questions.length} questions
+                    </div>
+                )}
+
+            </div>
+        </PageLayout>
     );
 };
 

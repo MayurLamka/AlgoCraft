@@ -311,6 +311,82 @@ const saveUserCode = (req, res) => {
     );
 };
 
+// =====================================================
+// TOGGLE REVISION
+// =====================================================
+
+const toggleRevision = (req, res) => {
+
+    const userId = req.user.user_id;
+    const questionId = req.params.questionId;
+
+    Question.toggleRevision(
+        userId,
+        questionId,
+        (err, result) => {
+
+            if (err) {
+
+                console.error(
+                    "Toggle revision error:",
+                    err
+                );
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Failed to update revision"
+                });
+
+            }
+
+            return res.status(200).json({
+                success: true,
+                isRevision: result.isRevision
+            });
+
+        }
+    );
+};
+
+
+
+
+// =====================================================
+// GET REVISION QUESTIONS
+// =====================================================
+
+const getRevisionQuestions = (req, res) => {
+
+    const userId = req.user.user_id;
+
+    Question.getRevisionQuestions(
+        userId,
+        (err, results) => {
+
+            if (err) {
+
+                console.error(
+                    "Get revision questions error:",
+                    err
+                );
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Failed to load revision questions"
+                });
+
+            }
+
+            return res.status(200).json({
+                success: true,
+                count: results.length,
+                questions: results
+            });
+
+        }
+    );
+};
+
 module.exports = {
     getAllQuestions,
     getQuestionById,
@@ -318,5 +394,7 @@ module.exports = {
     getQuestionsByDifficulty,
     getQuestionsByTopic,
     getCodeTemplate,
-    saveUserCode
+    saveUserCode,
+    toggleRevision,
+    getRevisionQuestions
 };

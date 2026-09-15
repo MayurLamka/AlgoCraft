@@ -1,10 +1,16 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const path = require("path");
 dotenv.config();
 
 const app = express();
-
+app.use(
+    "/uploads",
+    express.static(
+        path.join(__dirname, "uploads")
+    )
+);
 app.use(express.json());
 app.use(cors());
 
@@ -21,7 +27,12 @@ const topicRoutes = require("./routes/topicRoutes");
 const codeRoutes = require("./routes/codeRoutes");
 const solutionRoutes = require("./routes/solutionRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
+const adminInterviewRoutes = require("./routes/adminInterviewRoutes");
 const noteRoutes = require("./routes/noteRoutes");
+const adminNoteRoutes =
+    require("./routes/adminNoteRoutes");
+const contactRoutes = require("./routes/contactRoutes");
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/questions", questionRoutes);
@@ -34,7 +45,17 @@ app.use("/api/topics", topicRoutes);
 app.use("/api/code", codeRoutes);
 app.use("/api/solutions", solutionRoutes);
 app.use("/api/interviews",interviewRoutes);
+app.use(
+    "/api/admin/interviews",
+    adminInterviewRoutes
+);
 app.use("/api/notes",noteRoutes);
+app.use(
+    "/api/admin/notes",
+    adminNoteRoutes
+);
+
+app.use("/api/contact", contactRoutes);
 
 app.get("/", (req, res) => {
     res.send("DSA Platform API Running");
