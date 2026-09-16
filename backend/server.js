@@ -32,6 +32,7 @@ const noteRoutes = require("./routes/noteRoutes");
 const adminNoteRoutes =
     require("./routes/adminNoteRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const profileRoutes = require("./routes/profileRoutes");
 
 
 app.use("/api/auth", authRoutes);
@@ -56,6 +57,7 @@ app.use(
 );
 
 app.use("/api/contact", contactRoutes);
+app.use("/api/profile", profileRoutes);
 
 app.get("/", (req, res) => {
     res.send("DSA Platform API Running");

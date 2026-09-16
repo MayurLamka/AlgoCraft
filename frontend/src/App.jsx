@@ -14,6 +14,7 @@ import Interviews from "./pages/Interviews";
 import Notes from "./pages/Notes";
 import Progress from "./pages/Progress";
 import Revision from "./pages/Revision";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   return (
@@ -71,6 +72,11 @@ function App() {
         <Route
           path="/revision"
           element={<Revision />}
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
         />
 
       </Routes>
