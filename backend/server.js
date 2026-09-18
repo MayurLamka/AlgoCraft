@@ -33,7 +33,7 @@ const adminNoteRoutes =
     require("./routes/adminNoteRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const profileRoutes = require("./routes/profileRoutes");
-
+const premiumRoutes = require("./routes/premiumRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/questions", questionRoutes);
@@ -58,11 +58,21 @@ app.use(
 
 app.use("/api/contact", contactRoutes);
 app.use("/api/profile", profileRoutes);
+app.use(
+    "/api/premium",
+    premiumRoutes
+);
 
 app.get("/", (req, res) => {
     res.send("DSA Platform API Running");
 });
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server Running on Port ${process.env.PORT}`);
-});
+app.listen(
+    process.env.PORT,
+    "0.0.0.0",
+    () => {
+        console.log(
+            `Server running on port ${process.env.PORT}`
+        );
+    }
+);

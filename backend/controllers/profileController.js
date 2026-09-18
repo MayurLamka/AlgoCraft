@@ -51,7 +51,15 @@ const getProfile = (req, res) => {
                     mobile_number: user.mobile_number,
                     profile_picture: user.profile_picture,
                     role: user.role,
-                    created_at: user.created_at
+
+                    is_premium:
+                        Number(user.is_premium) === 1,
+
+                    premium_expires_at:
+                        user.premium_expires_at,
+
+                    created_at:
+                        user.created_at
                 }
             });
 

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Editor from "@monaco-editor/react";
 import algoCraftLogo from "../assets/algocraft-logo.svg";
-
+import PremiumModal
+    from "../components/PremiumModal";
 
 function QuestionPage() {
 
@@ -119,7 +120,8 @@ function QuestionPage() {
 
     const [outputOpen, setOutputOpen] = useState(false);
     const [outputHeight, setOutputHeight] = useState(260);
-
+    const [premiumOpen, setPremiumOpen] =
+        useState(false);
 
 
     useEffect(() => {
@@ -898,11 +900,24 @@ function QuestionPage() {
             console.log("SUBMIT CODE RESPONSE:", data);
 
             if (!response.ok || !data.success) {
+
                 setSubmitError(
                     data.message ||
                     data.error ||
                     "Submission failed"
                 );
+
+
+                if (
+                    data.code ===
+                    "PREMIUM_REQUIRED"
+                ) {
+
+                    setPremiumOpen(true);
+
+                }
+
+
                 return;
             }
 
@@ -1287,7 +1302,13 @@ function QuestionPage() {
 
                     {/* PREMIUM */}
 
-                    <button className="problem-premium">
+                    <button
+                        className="problem-premium"
+                        type="button"
+                        onClick={() =>
+                            setPremiumOpen(true)
+                        }
+                    >
 
                         <svg
                             width="17"
@@ -2675,6 +2696,20 @@ function QuestionPage() {
                 </section>
 
             </div>
+
+            <PremiumModal
+                open={premiumOpen}
+                onClose={() =>
+                    setPremiumOpen(false)
+                }
+                onPremium={() => {
+
+                    window.dispatchEvent(
+                        new Event("premium-updated")
+                    );
+
+                }}
+            />
 
         </div>
     );

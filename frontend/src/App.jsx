@@ -15,6 +15,7 @@ import Notes from "./pages/Notes";
 import Progress from "./pages/Progress";
 import Revision from "./pages/Revision";
 import ForgotPassword from "./pages/ForgotPassword";
+import DemoPayment from "./pages/DemoPayment";
 
 function App() {
   return (
@@ -77,6 +78,11 @@ function App() {
         <Route
           path="/forgot-password"
           element={<ForgotPassword />}
+        />
+
+        <Route
+          path="/demo-payment/:token"
+          element={<DemoPayment />}
         />
 
       </Routes>

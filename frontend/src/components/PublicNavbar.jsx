@@ -7,7 +7,7 @@ import api from "../services/api";
 import ProfilePopup from "./ProfilePopup";
 import EditProfileModal from "./EditProfileModal";
 import ChangePasswordModal from "./ChangePasswordModal";
-
+import PremiumModal from "./PremiumModal";
 
 function PublicNavbar() {
 
@@ -28,6 +28,9 @@ function PublicNavbar() {
         useState(false);
 
     const [changePasswordOpen, setChangePasswordOpen] =
+        useState(false);
+
+    const [premiumOpen, setPremiumOpen] =
         useState(false);
 
 
@@ -105,7 +108,59 @@ function PublicNavbar() {
 
     }, [authenticated]);
 
+useEffect(() => {
 
+    const refreshPremiumUser = async () => {
+
+        try {
+
+            const response =
+                await api.get("/profile");
+
+            if (
+                response.data.success
+            ) {
+
+                const updatedUser =
+                    response.data.user;
+
+                setUser(updatedUser);
+
+                localStorage.setItem(
+                    "user",
+                    JSON.stringify(updatedUser)
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Failed to refresh premium status:",
+                error
+            );
+
+        }
+
+    };
+
+
+    window.addEventListener(
+        "premium-updated",
+        refreshPremiumUser
+    );
+
+
+    return () => {
+
+        window.removeEventListener(
+            "premium-updated",
+            refreshPremiumUser
+        );
+
+    };
+
+}, []);
     // ==========================================
     // Home
     // ==========================================
@@ -180,6 +235,44 @@ function PublicNavbar() {
 
     };
 
+    const refreshProfile = async () => {
+
+    try {
+
+        const response =
+            await api.get("/profile");
+
+        if (
+            response.data.success
+        ) {
+
+            const updatedUser =
+                response.data.user;
+
+            setUser(
+                updatedUser
+            );
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify(
+                    updatedUser
+                )
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Failed to refresh premium status:",
+            error
+        );
+
+    }
+
+};
+
 
     // ==========================================
     // Change password
@@ -226,7 +319,7 @@ function PublicNavbar() {
                     <button
                         className={
                             location.pathname === "/" ||
-                            location.pathname === "/dashboard"
+                                location.pathname === "/dashboard"
                                 ? "active"
                                 : ""
                         }
@@ -279,9 +372,11 @@ function PublicNavbar() {
                             <button
                                 type="button"
                                 className="public-premium"
-                                onClick={() =>
-                                    navigate("/premium")
-                                }
+                                onClick={(event) => {
+                                    event.preventDefault();
+                                    event.stopPropagation();
+                                    setPremiumOpen(true);
+                                }}
                             >
 
                                 <svg
@@ -481,6 +576,17 @@ function PublicNavbar() {
                 />
 
             )}
+
+            <PremiumModal
+                open={premiumOpen}
+                onClose={() => setPremiumOpen(false)}
+               onPremium={refreshProfile}
+                isPremium={
+                    Number(user?.is_premium) === 1 &&
+                    user?.premium_expires_at &&
+                    new Date(user.premium_expires_at) > new Date()
+                }
+            />
 
         </>
 

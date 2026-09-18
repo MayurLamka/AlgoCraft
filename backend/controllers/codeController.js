@@ -1,5 +1,8 @@
 const db = require("../config/db");
 const SolvedQuestion = require("../models/SolvedQuestion");
+const {
+    checkFreeLimit
+} = require("./SolvedQuestionController");
 const Submission = require("../models/Submission");
 const { runCodeByLanguage } = require("../services/codeRunner");
 
@@ -292,8 +295,7 @@ const submitCode = async (req, res) => {
 
         const userId = req.user.user_id;
 
-
-        // =============================================
+                // =============================================
         // VALIDATION
         // =============================================
 
@@ -311,6 +313,70 @@ const submitCode = async (req, res) => {
                     "questionId, language and code are required"
             });
         }
+
+        // =============================================
+// FREE USER LIMIT
+// =============================================
+
+const access =
+    await new Promise(
+        (resolve, reject) => {
+
+            checkFreeLimit(
+
+                userId,
+
+                questionId,
+
+                (
+                    error,
+                    result
+                ) => {
+
+                    if (error) {
+
+                        reject(
+                            error
+                        );
+
+                        return;
+                    }
+
+                    resolve(
+                        result
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+if (!access.allowed) {
+
+    return res.status(403).json({
+
+        success: false,
+
+        code:
+            "PREMIUM_REQUIRED",
+
+        message:
+            "You have reached the 10 free questions limit. Get Premium to solve more questions.",
+
+        solvedCount:
+            access.solvedCount,
+
+        freeLimit:
+            10
+
+    });
+
+}
+
+
+
 
 
         

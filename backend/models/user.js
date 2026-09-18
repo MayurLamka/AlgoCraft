@@ -28,12 +28,18 @@ const findById = (userId, callback) => {
             mobile_number,
             profile_picture,
             role,
+            is_premium,
+            premium_expires_at,
             created_at
         FROM users
         WHERE user_id = ?
     `;
 
-    db.query(sql, [userId], callback);
+    db.query(
+        sql,
+        [userId],
+        callback
+    );
 };
 
 
@@ -168,5 +174,5 @@ module.exports = {
     updateProfile,
     updateName,
     updatePassword,
-    findByIdWithPassword 
+    findByIdWithPassword
 };

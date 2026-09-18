@@ -116,6 +116,13 @@ function ProfilePopup({
                         {user?.email || ""}
                     </p>
 
+                    {Number(user?.is_premium) === 1 && (
+                        <div className="profile-premium-badge">
+                            <span>✦</span>
+                            PREMIUM MEMBER
+                        </div>
+                    )}
+
                 </div>
 
 
