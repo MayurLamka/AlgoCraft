@@ -10,6 +10,22 @@ function Dashboard() {
 
     const [topics, setTopics] = useState([]);
 
+    const today = new Date();
+
+    const [calendarDate, setCalendarDate] = useState(
+        new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            1
+        )
+    );
+
+    const [calendarQuestions, setCalendarQuestions] =
+        useState([]);
+
+    const [calendarLoading, setCalendarLoading] =
+        useState(false);
+
     const [selectedTopic, setSelectedTopic] = useState("all");
 
     const [questions, setQuestions] = useState([]);
@@ -30,6 +46,62 @@ function Dashboard() {
     const [dashboardLoading, setDashboardLoading] = useState(true);
     const navigate = useNavigate();
     const [revisionLoading, setRevisionLoading] = useState(false);
+
+
+
+    const fetchCalendar = async () => {
+
+        try {
+
+            setCalendarLoading(true);
+
+            const token =
+                localStorage.getItem("token");
+
+            const year =
+                calendarDate.getFullYear();
+
+            const month =
+                calendarDate.getMonth() + 1;
+
+            const response = await fetch(
+                `http://localhost:5000/api/calendar?year=${year}&month=${month}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+
+                setCalendarQuestions(
+                    data.calendar || []
+                );
+
+            } else {
+
+                setCalendarQuestions([]);
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Calendar fetch error:",
+                error
+            );
+
+            setCalendarQuestions([]);
+
+        } finally {
+
+            setCalendarLoading(false);
+
+        }
+    };
 
 
     /* =========================================
@@ -104,6 +176,86 @@ function Dashboard() {
         fetchTopics();
 
     }, []);
+
+    useEffect(() => {
+
+        fetchCalendar();
+
+    }, [calendarDate]);
+
+    const monthName =
+        calendarDate.toLocaleString(
+            "default",
+            {
+                month: "long"
+            }
+        );
+
+    const year =
+        calendarDate.getFullYear();
+
+    const firstDay =
+        new Date(
+            year,
+            calendarDate.getMonth(),
+            1
+        ).getDay();
+
+    const daysInMonth =
+        new Date(
+            year,
+            calendarDate.getMonth() + 1,
+            0
+        ).getDate();
+
+    const previousMonth = () => {
+
+        setCalendarDate(
+            new Date(
+                year,
+                calendarDate.getMonth() - 1,
+                1
+            )
+        );
+
+    };
+
+    const nextMonth = () => {
+
+        setCalendarDate(
+            new Date(
+                year,
+                calendarDate.getMonth() + 1,
+                1
+            )
+        );
+
+    };
+
+    const goToCalendarQuestion = (questionId) => {
+
+        if (!questionId) {
+            return;
+        }
+
+        navigate(`/question/${questionId}`);
+
+    };
+
+    const isToday = (day) => {
+
+        const currentDate = new Date();
+
+        return (
+            currentDate.getFullYear() === year &&
+            currentDate.getMonth() ===
+            calendarDate.getMonth() &&
+            currentDate.getDate() === day
+        );
+
+    };
+
+
     useEffect(() => {
 
         const fetchDashboardStats = async () => {
@@ -371,58 +523,58 @@ function Dashboard() {
 
     const handleRevisionToggle = async (questionId) => {
 
-    try {
+        try {
 
-        const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token");
 
-        const response = await fetch(
-            `http://localhost:5000/api/questions/revision/${questionId}`,
-            {
-                method: "POST",
+            const response = await fetch(
+                `http://localhost:5000/api/questions/revision/${questionId}`,
+                {
+                    method: "POST",
 
-                headers: {
-                    Authorization: `Bearer ${token}`
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 }
-            }
-        );
-
-        const data = await response.json();
-
-        console.log(
-            "REVISION RESPONSE:",
-            data
-        );
-
-        if (!response.ok || !data.success) {
-
-            console.error(
-                "Revision failed:",
-                data.message
             );
 
-            return;
+            const data = await response.json();
+
+            console.log(
+                "REVISION RESPONSE:",
+                data
+            );
+
+            if (!response.ok || !data.success) {
+
+                console.error(
+                    "Revision failed:",
+                    data.message
+                );
+
+                return;
+            }
+
+            setQuestions((previousQuestions) =>
+                previousQuestions.map((question) =>
+                    question.question_id === questionId
+                        ? {
+                            ...question,
+                            isRevision: data.isRevision
+                        }
+                        : question
+                )
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Revision request failed:",
+                error
+            );
+
         }
-
-        setQuestions((previousQuestions) =>
-            previousQuestions.map((question) =>
-                question.question_id === questionId
-                    ? {
-                        ...question,
-                        isRevision: data.isRevision
-                    }
-                    : question
-            )
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Revision request failed:",
-            error
-        );
-
-    }
-};
+    };
 
 
     return (
@@ -648,38 +800,38 @@ function Dashboard() {
 
                     <div className="sidebar-section-title">
                         MY LISTS
-                    
 
 
 
 
 
-                    <button
-                        className="sidebar-item"
-                        onClick={() => navigate("/revision")}
-                    >
 
-                        <svg
-                            width="19"
-                            height="19"
-                            viewBox="0 0 24 24"
-                            fill="none"
+                        <button
+                            className="sidebar-item"
+                            onClick={() => navigate("/revision")}
                         >
 
-                            <path
-                                d="M12 3.5L14.6 8.8L20.5 9.7L16.2 14L17.2 20L12 17.2L6.8 20L7.8 14L3.5 9.7L9.4 8.8L12 3.5Z"
-                                stroke="currentColor"
-                                strokeWidth="1.7"
-                                strokeLinejoin="round"
-                            />
+                            <svg
+                                width="19"
+                                height="19"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                            >
 
-                        </svg>
+                                <path
+                                    d="M12 3.5L14.6 8.8L20.5 9.7L16.2 14L17.2 20L12 17.2L6.8 20L7.8 14L3.5 9.7L9.4 8.8L12 3.5Z"
+                                    stroke="currentColor"
+                                    strokeWidth="1.7"
+                                    strokeLinejoin="round"
+                                />
 
-                        <span>
-                            Revision
-                        </span>
+                            </svg>
 
-                    </button>
+                            <span>
+                                Revision
+                            </span>
+
+                        </button>
 
                     </div>
 
@@ -1352,10 +1504,40 @@ function Dashboard() {
 
                     <section className="calendar-card">
 
-                        <h2>
-                            August 2026
-                        </h2>
+                        {/* =========================================
+       CALENDAR HEADER
+    ========================================= */}
 
+                        <div className="calendar-header">
+
+                            <button
+                                className="calendar-nav-button"
+                                onClick={previousMonth}
+                                aria-label="Previous month"
+                            >
+                                ‹
+                            </button>
+
+
+                            <h2>
+                                {monthName} {year}
+                            </h2>
+
+
+                            <button
+                                className="calendar-nav-button"
+                                onClick={nextMonth}
+                                aria-label="Next month"
+                            >
+                                ›
+                            </button>
+
+                        </div>
+
+
+                        {/* =========================================
+       WEEKDAYS
+    ========================================= */}
 
                         <div className="calendar-weekdays">
 
@@ -1370,55 +1552,148 @@ function Dashboard() {
                         </div>
 
 
+                        {/* =========================================
+       DAYS
+    ========================================= */}
+
                         <div className="calendar-days">
 
-                            {/* August 1, 2026 = Saturday */}
+                            {Array.from(
+                                { length: firstDay },
+                                (_, index) => (
 
-                            <span className="calendar-empty"></span>
-                            <span className="calendar-empty"></span>
-                            <span className="calendar-empty"></span>
-                            <span className="calendar-empty"></span>
-                            <span className="calendar-empty"></span>
-                            <span className="calendar-empty"></span>
+                                    <span
+                                        key={`empty-${index}`}
+                                        className="calendar-empty"
+                                    />
 
-                            <span>1</span>
+                                )
+                            )}
 
-                            <span>2</span>
-                            <span>3</span>
-                            <span>4</span>
-                            <span>5</span>
-                            <span>6</span>
-                            <span>7</span>
-                            <span>8</span>
 
-                            <span>9</span>
-                            <span>10</span>
-                            <span>11</span>
-                            <span>12</span>
-                            <span>13</span>
-                            <span>14</span>
-                            <span>15</span>
+                            {Array.from(
+                                { length: daysInMonth },
+                                (_, index) => {
 
-                            <span>16</span>
-                            <span>17</span>
-                            <span>18</span>
-                            <span>19</span>
-                            <span>20</span>
-                            <span>21</span>
-                            <span>22</span>
+                                    const day = index + 1;
 
-                            <span>23</span>
-                            <span>24</span>
-                            <span>25</span>
-                            <span>26</span>
-                            <span>27</span>
-                            <span>28</span>
-                            <span>29</span>
+                                    const dateString =
+                                        `${year}-${String(
+                                            calendarDate.getMonth() + 1
+                                        ).padStart(2, "0")}-${String(
+                                            day
+                                        ).padStart(2, "0")}`;
 
-                            <span>30</span>
-                            <span>31</span>
+                                    const dailyQuestion =
+                                        calendarQuestions.find(
+                                            item =>
+                                                String(
+                                                    item.calendar_date
+                                                ).slice(0, 10) === dateString
+                                        );
+
+
+                                    const solved =
+                                        dailyQuestion &&
+                                        Number(
+                                            dailyQuestion.isSolved
+                                        ) === 1;
+
+
+                                    return (
+
+                                        <button
+                                            key={day}
+                                            className={`
+                            calendar-day
+                            ${isToday(day)
+                                                    ? "calendar-today"
+                                                    : ""}
+                            ${solved
+                                                    ? "calendar-solved"
+                                                    : ""}
+                            ${dailyQuestion
+                                                    ? "calendar-has-question"
+                                                    : ""}
+                        `}
+                                            onClick={() =>
+                                                goToCalendarQuestion(
+                                                    dailyQuestion?.question_id
+                                                )
+                                            }
+                                            disabled={
+                                                calendarLoading ||
+                                                !dailyQuestion
+                                            }
+                                            title={
+                                                dailyQuestion
+                                                    ? dailyQuestion.title
+                                                    : "No question assigned"
+                                            }
+                                        >
+
+                                            <span className="calendar-day-number">
+                                                {day}
+                                            </span>
+
+
+                                            {dailyQuestion && (
+
+                                                <span
+                                                    className={`
+                                    calendar-status-dot
+                                    ${solved
+                                                            ? "solved"
+                                                            : "unsolved"
+                                                        }
+                                `}
+                                                />
+
+                                            )}
+
+                                        </button>
+
+                                    );
+
+                                }
+                            )}
 
                         </div>
+
+
+                        {/* =========================================
+       LEGEND
+    ========================================= */}
+
+                        <div className="calendar-legend">
+
+                            <div className="calendar-legend-item">
+
+                                <span className="calendar-status-dot solved"></span>
+
+                                <span>Solved</span>
+
+                            </div>
+
+
+                            <div className="calendar-legend-item">
+
+                                <span className="calendar-status-dot unsolved"></span>
+
+                                <span>Practice</span>
+
+                            </div>
+
+                        </div>
+
+
+                        {calendarLoading && (
+
+                            <div className="calendar-loading">
+                                Loading...
+                            </div>
+
+                        )}
 
                     </section>
 

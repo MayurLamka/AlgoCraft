@@ -1274,7 +1274,7 @@ body {
 
 .question-title {
 
-    color: #000000;
+    color: #ffffff;
 
     font-size: 14px;
 
@@ -1562,115 +1562,331 @@ body {
     font-weight: 500;
 }
 
-
 /* =========================================
    CALENDAR CARD
 ========================================= */
 
 .calendar-card {
-
     width: 100%;
-
-    padding: 20px;
-
-    background-color: #0d0d0d;
-
-    border: 1px solid #222222;
-
+    box-sizing: border-box;
+    padding: 18px 0px 16px;
+    background: #0b0b0b;
+    border: 1px solid #222;
     border-radius: 8px;
 }
 
 
-.calendar-card h2 {
+/* =========================================
+   CALENDAR HEADER
+========================================= */
 
-    margin: 0 0 20px;
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
 
-    color: #ffffff;
-
-    font-size: 16px;
-
+.calendar-header h2 {
+    margin: 0;
+    color: #f5f5f5;
+    font-size: 17px;
     font-weight: 600;
+    line-height: 1;
+}
 
-    text-align: center;
+.calendar-nav-button {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+    outline: none;
+    background: transparent;
+
+    color: #666;
+    font-size: 27px;
+    font-weight: 300;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.calendar-nav-button:hover {
+    background: transparent;
+    color: #aaa;
+    transform: scale(1.08);
 }
 
 
 /* =========================================
-   CALENDAR WEEKDAYS
+   WEEKDAYS
 ========================================= */
 
 .calendar-weekdays {
-
     display: grid;
-
     grid-template-columns: repeat(7, 1fr);
 
-    margin-bottom: 10px;
+    margin-bottom: 9px;
 
     text-align: center;
 }
 
-
 .calendar-weekdays span {
-
-    color: #666666;
-
+    color: #555;
     font-size: 10px;
+    font-weight: 600;
+    line-height: 20px;
+}
 
+
+/* =========================================
+   CALENDAR GRID
+========================================= */
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+
+    /* column-gap: 2px; */
+    /* row-gap: 5px; */
+
+    width: 100%;
+}
+
+
+/* =========================================
+   EMPTY DAYS
+========================================= */
+
+.calendar-empty {
+    width: 32px;
+    height: 32px;
+    justify-self: center;
+
+    visibility: hidden;
+}
+
+
+/* =========================================
+   NORMAL DAY
+========================================= */
+
+.calendar-card .calendar-day {
+    position: relative;
+
+    width: 32px;
+    height: 32px;
+
+    justify-self: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    margin: 0;
+
+    border: none !important;
+    outline: none;
+
+    border-radius: 50%;
+
+    background: transparent !important;
+
+    color: #777;
+
+    font-size: 11px;
+    font-weight: 400;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+/* =========================================
+   HOVER
+========================================= */
+
+.calendar-card .calendar-day:hover:not(:disabled) {
+    background: #181818 !important;
+    color: #ddd;
+}
+
+
+/* =========================================
+   DAY NUMBER
+========================================= */
+
+.calendar-day-number {
+    position: relative;
+    z-index: 2;
+
+    font-size: 11px;
+    line-height: 1;
+
+    color: inherit;
+}
+
+
+/* =========================================
+   TODAY
+========================================= */
+
+.calendar-card .calendar-day.calendar-today {
+    background: #19d39b !important;
+    color: #ffffff;
+
+    box-shadow: none;
+}
+
+.calendar-card .calendar-day.calendar-today:hover {
+    background: #19d39b !important;
+}
+
+.calendar-today .calendar-day-number {
+    color: #ffffff;
     font-weight: 600;
 }
 
 
 /* =========================================
-   CALENDAR DAYS
+   SOLVED DAY
 ========================================= */
 
-.calendar-days {
+.calendar-card .calendar-day.calendar-solved {
+    color: #bdbdbd;
+}
 
-    display: grid;
+.calendar-card .calendar-day.calendar-solved:hover {
+    color: #ffffff;
+}
 
-    grid-template-columns: repeat(7, 1fr);
 
-    gap: 5px;
+/* =========================================
+   STATUS DOT
+========================================= */
+
+.calendar-status-dot {
+    position: absolute;
+
+    bottom: 2px;
+    left: 50%;
+
+    width: 4px;
+    height: 4px;
+
+    transform: translateX(-50%);
+
+    border-radius: 50%;
+}
+
+
+/* SOLVED */
+
+.calendar-status-dot.solved {
+    background: #08f7af;
+
+    box-shadow:
+        0 0 5px rgba(25, 211, 155, 0.45);
+}
+
+
+/* UNSOLVED */
+
+.calendar-status-dot.unsolved {
+    background: #ed0c0c;
+}
+
+
+/* =========================================
+   TODAY DOT
+========================================= */
+
+.calendar-today .calendar-status-dot {
+    background: #ffffff;
+    box-shadow: none;
+}
+
+
+/* =========================================
+   DISABLED
+========================================= */
+
+.calendar-card .calendar-day:disabled {
+    opacity: 1;
+    cursor: default;
+}
+
+
+/* =========================================
+   LEGEND
+========================================= */
+
+.calendar-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 18px;
+
+    margin-top: 17px;
+    padding-top: 13px;
+
+    border-top: 1px solid #1c1c1c;
+}
+
+.calendar-legend-item {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    color: #666;
+
+    font-size: 10px;
+}
+
+
+/* Legend dots */
+
+.calendar-legend-item .calendar-status-dot {
+    position: static;
+
+    width: 5px;
+    height: 5px;
+
+    transform: none;
+}
+
+
+/* =========================================
+   LOADING
+========================================= */
+
+.calendar-loading {
+    margin-top: 8px;
+
+    color: #555;
+
+    font-size: 9px;
 
     text-align: center;
 }
 
-
-.calendar-days span {
-
-    width: 25px;
-
-    height: 25px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border-radius: 50%;
-
-    color: #a5a5a5;
-
-    font-size: 11px;
-}
-
-
-.calendar-days span:not(.calendar-empty):hover {
-
-    background-color: #1c1c1c;
-
-    color: #ffffff;
-
-    cursor: pointer;
-}
-
-
-.calendar-empty {
-
-    visibility: hidden;
-}
 
 /* --------------------------------Editor Page-------------------------------- */
 
@@ -1955,122 +2171,6 @@ body {
 
     background-color: #050505;
     color: white;
-}
-
-
-/* =========================================
-   RIGHT
-========================================= */
-
-.problem-navbar-right {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 6px;
-
-    margin-left: auto;
-}
-
-
-/* =========================================
-   STREAK
-========================================= */
-
-.problem-streak {
-
-    height: 35px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 6px;
-
-    padding: 0 10px;
-
-    color: #999999;
-
-    font-size: 14px;
-}
-
-
-/* =========================================
-   PROFILE
-========================================= */
-
-.problem-profile {
-
-    width: 35px;
-
-    height: 35px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background-color: #eeeeee;
-
-    color: #555555;
-
-    cursor: pointer;
-
-    margin-left: 4px;
-}
-
-
-.problem-profile:hover {
-
-    background-color: #ffffff;
-}
-
-
-/* =========================================
-   PREMIUM
-========================================= */
-
-.problem-premium {
-
-    height: 35px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 7px;
-
-    margin-left: 8px;
-
-    padding: 0 16px;
-
-    border: none;
-
-    border-radius: 10px;
-
-    background-color: #2b2112;
-
-    color: #f5a623;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-
-.problem-premium:hover {
-
-    background-color: #3a2b16;
 }
 
 
@@ -2364,7 +2464,7 @@ body {
 
     margin: 0;
 
-    color: #ffffff;
+    color: #040404;
 
     font-size: 22px;
 
@@ -12980,3 +13080,4 @@ textarea {
         border-color: #514316;
     }
 }
+

@@ -34,6 +34,9 @@ const adminNoteRoutes =
 const contactRoutes = require("./routes/contactRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const premiumRoutes = require("./routes/premiumRoutes");
+const calendarRoutes =
+    require("./routes/calendarRoutes");
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/questions", questionRoutes);
@@ -61,6 +64,11 @@ app.use("/api/profile", profileRoutes);
 app.use(
     "/api/premium",
     premiumRoutes
+);
+
+app.use(
+    "/api/calendar",
+    calendarRoutes
 );
 
 app.get("/", (req, res) => {
