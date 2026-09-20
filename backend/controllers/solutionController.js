@@ -15,7 +15,6 @@ const getSolutions = (req, res) => {
             });
         }
 
-        console.log("SOLUTIONS FROM DB:", results);
 
         res.json({
             success: true,
