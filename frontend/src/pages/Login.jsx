@@ -58,6 +58,13 @@ function Login() {
                     <form onSubmit={handleLogin}>
                         <label>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" required /></label>
                         <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" autoComplete="current-password" required /></label>
+                        <button
+                            type="button"
+                            className="login-forgot-link"
+                            onClick={() => navigate("/forgot-password")}
+                        >
+                            Forgot password?
+                        </button>
                         {error && <p className="auth-error">{error}</p>}
                         <button className="auth-submit" type="submit" disabled={loading}>{loading ? "Signing in..." : "Login ↗"}</button>
                     </form>

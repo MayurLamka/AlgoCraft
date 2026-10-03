@@ -141,6 +141,8 @@ function TransformShowcase() {
 function About() {
     const navigate = useNavigate();
 
+    const isLoggedIn = !!localStorage.getItem("token");
+
     return (
         <div className="public-page about-page">
             <PublicNavbar />
@@ -188,13 +190,20 @@ function About() {
                     </div>
                 </section>
 
-                <section className="about-cta">
-                    <span className="section-kicker">READY?</span>
-                    <h2>Build the habit. Crack the interview.</h2>
-                    <button className="hero-primary" onClick={() => navigate("/register")}>
-                        Create your account <span>↗</span>
-                    </button>
-                </section>
+                {!isLoggedIn && (
+                    <section className="about-cta">
+                        <span className="section-kicker">READY?</span>
+
+                        <h2>Build the habit. Crack the interview.</h2>
+
+                        <button
+                            className="hero-primary"
+                            onClick={() => navigate("/register")}
+                        >
+                            Create your account <span>↗</span>
+                        </button>
+                    </section>
+                )}
             </main>
         </div>
     );

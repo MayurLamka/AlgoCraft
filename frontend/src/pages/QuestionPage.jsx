@@ -897,7 +897,7 @@ function QuestionPage() {
 
             const data = await response.json();
 
-            console.log("SUBMIT CODE RESPONSE:", data);
+            
 
             if (!response.ok || !data.success) {
 
@@ -931,7 +931,7 @@ function QuestionPage() {
             }
 
         } catch (error) {
-            console.error("Submit code error:", error);
+            
             setSubmitError(
                 "Unable to connect to code execution server"
             );

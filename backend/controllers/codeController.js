@@ -284,7 +284,7 @@ const runCode = async (req, res) => {
 
 const submitCode = async (req, res) => {
 
-    console.log("REQ.USER:", req.user);
+    
     try {
 
         const {
@@ -295,7 +295,7 @@ const submitCode = async (req, res) => {
 
         const userId = req.user.user_id;
 
-                // =============================================
+        // =============================================
         // VALIDATION
         // =============================================
 
@@ -315,71 +315,71 @@ const submitCode = async (req, res) => {
         }
 
         // =============================================
-// FREE USER LIMIT
-// =============================================
+        // FREE USER LIMIT
+        // =============================================
 
-const access =
-    await new Promise(
-        (resolve, reject) => {
+        const access =
+            await new Promise(
+                (resolve, reject) => {
 
-            checkFreeLimit(
+                    checkFreeLimit(
 
-                userId,
+                        userId,
 
-                questionId,
+                        questionId,
 
-                (
-                    error,
-                    result
-                ) => {
+                        (
+                            error,
+                            result
+                        ) => {
 
-                    if (error) {
+                            if (error) {
 
-                        reject(
-                            error
-                        );
+                                reject(
+                                    error
+                                );
 
-                        return;
-                    }
+                                return;
+                            }
 
-                    resolve(
-                        result
+                            resolve(
+                                result
+                            );
+
+                        }
                     );
 
                 }
             );
 
+
+        if (!access.allowed) {
+
+            return res.status(403).json({
+
+                success: false,
+
+                code:
+                    "PREMIUM_REQUIRED",
+
+                message:
+                    "You have reached the 10 free questions limit. Get Premium to solve more questions.",
+
+                solvedCount:
+                    access.solvedCount,
+
+                freeLimit:
+                    10
+
+            });
+
         }
-    );
-
-
-if (!access.allowed) {
-
-    return res.status(403).json({
-
-        success: false,
-
-        code:
-            "PREMIUM_REQUIRED",
-
-        message:
-            "You have reached the 10 free questions limit. Get Premium to solve more questions.",
-
-        solvedCount:
-            access.solvedCount,
-
-        freeLimit:
-            10
-
-    });
-
-}
 
 
 
 
 
-        
+
 
         // =============================================
         // 1. SAVE USER CODE
@@ -422,12 +422,12 @@ if (!access.allowed) {
         // 2. JUDGE CODE
         // =============================================
 
-       const result =
-    await judgeCode(
-        code,
-        questionId,
-        language
-    );
+        const result =
+            await judgeCode(
+                code,
+                questionId,
+                language
+            );
 
         // =============================================
         // 3. SAVE SUBMISSION HISTORY

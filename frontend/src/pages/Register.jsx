@@ -18,6 +18,10 @@ function Register() {
         e.preventDefault();
         setMessage("");
         setError("");
+        if (!/^\d{10}$/.test(mobileNumber)) {
+            setError("Mobile number must contain exactly 10 digits.");
+            return;
+        }
         setLoading(true);
 
         try {
@@ -63,7 +67,28 @@ function Register() {
                     <form onSubmit={handleRegister}>
                         <label>Name<input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" autoComplete="name" required /></label>
                         <label>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" required /></label>
-                        <label>Mobile Number<input type="tel" value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} placeholder="10-digit mobile number" autoComplete="tel" required /></label>
+                        <label>
+                            Mobile Number
+
+                            <input
+                                type="tel"
+                                value={mobileNumber}
+                                onChange={(e) => {
+                                    const value = e.target.value
+                                        .replace(/\D/g, "")
+                                        .slice(0, 10);
+
+                                    setMobileNumber(value);
+                                }}
+                                placeholder="10-digit mobile number"
+                                autoComplete="tel"
+                                inputMode="numeric"
+                                maxLength={10}
+                                pattern="[0-9]{10}"
+                                title="Mobile number must contain exactly 10 digits"
+                                required
+                            />
+                        </label>
                         <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create a password" autoComplete="new-password" minLength="6" required /></label>
 
                         {message && <p className="auth-success">{message}</p>}

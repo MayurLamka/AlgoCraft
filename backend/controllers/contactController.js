@@ -1,5 +1,8 @@
 
 const db = require("../config/db");
+const {
+    sendContactMessage
+} = require("../services/emailService");
 
 const ensureTable = (callback) => {
     const sql = `
@@ -70,21 +73,53 @@ const createContactMessage = (req, res) => {
                 String(subject).trim(),
                 String(message).trim()
             ],
-            (error, result) => {
-                if (error) {
-                    console.error("Contact message error:", error);
-                    return res.status(500).json({
-                        success: false,
-                        message: "Unable to save your message"
-                    });
-                }
+            async (error, result) => {
 
-                return res.status(201).json({
-                    success: true,
-                    message: "Message sent successfully",
-                    message_id: result.insertId
-                });
-            }
+    if (error) {
+        console.error(
+            "Contact message error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to save your message"
+        });
+    }
+
+    try {
+
+        await sendContactMessage({
+            name: String(name).trim(),
+            email: String(email).trim(),
+            subject: String(subject).trim(),
+            message: String(message).trim()
+        });
+
+        console.log(
+            "✅ Contact email sent successfully"
+        );
+
+        return res.status(201).json({
+            success: true,
+            message: "Message sent successfully",
+            message_id: result.insertId
+        });
+
+    } catch (emailError) {
+
+        console.error(
+            "❌ CONTACT EMAIL ERROR:",
+            emailError
+        );
+
+        return res.status(500).json({
+            success: false,
+            message:
+                "Your message was saved, but we could not send the email notification."
+        });
+    }
+}
         );
     });
 };

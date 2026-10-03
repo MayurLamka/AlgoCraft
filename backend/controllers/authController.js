@@ -15,7 +15,6 @@ const register = (req, res) => {
         password
     } = req.body;
 
-
     // Check required fields
     if (!name || !email || !mobile_number || !password) {
         return res.status(400).json({
@@ -24,6 +23,15 @@ const register = (req, res) => {
         });
     }
 
+    // Validate mobile number
+    const mobileNumber = String(mobile_number).trim();
+
+    if (!/^\d{10}$/.test(mobileNumber)) {
+        return res.status(400).json({
+            success: false,
+            message: "Mobile number must contain exactly 10 digits"
+        });
+    }
 
     // Check if email already exists
     User.findByEmail(email, (err, results) => {
@@ -37,14 +45,12 @@ const register = (req, res) => {
             });
         }
 
-
         if (results.length > 0) {
             return res.status(400).json({
                 success: false,
                 message: "Email already exists"
             });
         }
-
 
         // Hash password
         bcrypt.hash(password, 10, (err, hashedPassword) => {
@@ -58,12 +64,11 @@ const register = (req, res) => {
                 });
             }
 
-
             // Insert user
             User.createUser(
                 name,
                 email,
-                mobile_number,
+                mobileNumber,
                 hashedPassword,
                 (err, result) => {
 
@@ -76,19 +81,14 @@ const register = (req, res) => {
                         });
                     }
 
-
                     res.status(201).json({
                         success: true,
                         message: "User Registered Successfully"
                     });
-
                 }
             );
-
         });
-
     });
-
 };
 
 
@@ -141,8 +141,8 @@ const login = (req, res) => {
         const user = results[0];
 
 
-    
-        
+
+
         // Compare password
         bcrypt.compare(
             password,
